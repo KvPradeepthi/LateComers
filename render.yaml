@@ -22,8 +22,9 @@ services:
       - key: MAIL_PASS
 
   # Frontend React Static Site
-  - type: static
+  - type: web
     name: latecomers-frontend
+    env: static
     plan: free
     rootDir: Latecomers_Frontend
     buildCommand: npm install --legacy-peer-deps && npm run build
