@@ -17,13 +17,16 @@ services:
       - key: GEMINI_API_KEY
         sync: false
 
+staticSites:
   # Frontend React Static Site
-  - type: web
-    name: latecomers-frontend
-    env: static
+  - name: latecomers-frontend
     rootDir: Latecomers_Frontend
     buildCommand: npm install --legacy-peer-deps && npm run build
     publishDir: build
+    routes:
+      - type: rewrite
+        src: /*
+        dest: /index.html
     envVars:
       - key: REACT_APP_API
         sync: false
