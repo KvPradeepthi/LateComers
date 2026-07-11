@@ -16,27 +16,14 @@ services:
         sync: false
       - key: GEMINI_API_KEY
         sync: false
-      - key: MAIL_HOST
-        value: smtp.office365.com
-      - key: MAIL_PORT
-        value: 587
-      - key: MAIL_USER
-        sync: false
-      - key: MAIL_PASS
-        sync: false
 
   # Frontend React Static Site
   - type: web
     name: latecomers-frontend
     env: static
-    plan: free
     rootDir: Latecomers_Frontend
     buildCommand: npm install --legacy-peer-deps && npm run build
     publishDir: build
-    routes:
-      - type: rewrite
-        src: /*
-        dest: /index.html
     envVars:
       - key: REACT_APP_API
         sync: false
