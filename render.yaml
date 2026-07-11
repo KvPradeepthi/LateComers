@@ -25,7 +25,6 @@ services:
   - type: web
     name: latecomers-frontend
     env: static
-    plan: free
     rootDir: Latecomers_Frontend
     buildCommand: npm install --legacy-peer-deps && npm run build
     publishDir: build
@@ -35,7 +34,3 @@ services:
         dest: /index.html
     envVars:
       - key: REACT_APP_API
-        fromService:
-          type: web
-          name: latecomers-backend
-          property: host
