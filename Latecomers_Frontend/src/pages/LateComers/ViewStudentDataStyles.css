@@ -1,0 +1,52 @@
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-div img {
+  height: 120px;
+  width: 120px;
+  border-radius: 50%;
+  border: 1px solid;
+}
+
+.details_group {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.details_group .span {
+    font-weight: 900;
+    margin-right: 5px;
+}
+
+.supspended-student {
+  color: red;
+  font-size: 1.5rem;
+  font-weight: 500;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 1;
+  }
+  
+}
+
+

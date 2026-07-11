@@ -1,0 +1,236 @@
+@import url("https://fonts.googleapis.com/css2?family=Bona+Nova+SC:ital,wght@0,400;0,700;1,400&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap");
+
+@import url('https://fonts.googleapis.com/css2?family=Bona+Nova+SC:ital,wght@0,400;0,700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+
+.mainParent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 30px;
+  /* color: white; */
+  padding-bottom: 40px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+/* #f4b41a #143d59 */
+
+.collegeCards {
+  background-color: #235386;
+  overflow: hidden;
+  border-radius: 8px;
+  height: 250px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: 10px;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.collegeHead {
+  height: 60%;
+  background-color: #1d5c96;
+  border-bottom: 3px solid #b6c6d4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px 8px 0px 0px;
+}
+
+/* New glare effect for collegeCards */
+.card-glare {
+  content: "";
+  position: absolute;
+  top: 0;
+  /* Center vertically */
+  left: -100%;
+  /* Start from the left outside the card */
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.4) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  /* Increased whiteness */
+  pointer-events: none;
+  /* Make sure the glare doesn't capture mouse events */
+  opacity: 0;
+  /* Initially hidden */
+  z-index: 1;
+  /* Set a z-index to overlay the card */
+  transition: opacity 0.3s;
+  /* Smooth transition for opacity */
+}
+
+.collegeCards:hover .card-glare {
+  opacity: 0.4;
+  /* Keep the glare visible on hover */
+  animation: move-glare 1s forwards;
+  /* Move the glare across the card */
+}
+
+@keyframes move-glare {
+  0% {
+    left: -100%;
+    /* Start from the left outside the card */
+    opacity: 0.4;
+    /* Set initial opacity */
+  }
+
+  100% {
+    left: 100%;
+    /* Move to the right outside the card */
+    opacity: 0;
+    /* Fade out at the end */
+  }
+}
+
+.collegeCards:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.clgName {
+  text-align: center;
+  /* border-bottom: 3px solid white; */
+  padding: 10px;
+  width: 100%;
+  font-size: 26px;
+  color: #b6c6d4;
+  height: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* font-family: "Bona Nova SC", serif;
+  font-weight: 400;
+  font-style: normal; */
+
+  font-family: "Newsreader", serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+}
+
+/* Ensure the glare is behind the content */
+.collegeCards .card-glare {
+  z-index: 1;
+  /* Behind the card content */
+}
+
+/* Other styles remain unchanged */
+.bottomSection {
+  background-color: #12395d;
+  display: flex;
+  width: 100%;
+  height: 40%;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 15px;
+  border-radius: 0px 0px 8px 8px;
+  /* Adds space on the sides */
+}
+
+.countSection {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* padding-left: 3px; */
+  font-size: 1rem;
+  color: #b6c6d4;
+  font-weight: 600;
+  letter-spacing: 1px;
+  /* gap: 15px; */
+}
+
+.countSection p {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  /* gap: 5px; */
+}
+
+/* Define continuous rotation animation */
+@keyframes rotate360 {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.imageSection {
+    /* Existing styles */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: bounceIn 0.5s ease; /* Initial bounce-in animation */
+    transition: transform 0.3s ease; /* Smooth start for rotation */
+}
+
+/* Apply rotation to .imageSection when hovering over .countSection */
+.collegeCards:hover .imageSection {
+    animation: rotate360 3s linear infinite; /* Continuous rotation when parent is hovered */
+}
+
+.branchCardWrapper:hover .imageSection {
+  animation: rotate360 3s linear infinite; /* Continuous rotation when parent is hovered */
+}
+
+.clgImageCircular {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: contain;
+  padding: 3px;
+  background-color: #1d4d79;
+  transition: box-shadow 0.3s ease;
+}
+
+.clgImageCircular:hover {
+  box-shadow: 0 0 10px 2px #C29439;
+}
+
+.myButton {
+  height: 35px;
+  width: 140px;
+  font-size: 16px;
+  text-align: center;
+  border-radius: 15px;
+  background-color: rgb(25, 245, 14);
+  color: black;
+  box-shadow: 2px 2px 5px black;
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.1);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in {
+  from {
+    left: -100%;
+  }
+
+  to {
+    left: 100%;
+  }
+}

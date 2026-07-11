@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Production backups
+*.backup
+**/*.backup
+
+# Local environment variables
+.env
+**/.env
+
+# Build outputs
+build/
+**/build/
+.next/
+**/.next/
+out/
+dist/
+
+# System files
+.DS_Store
+Thumbs.db
+*.log

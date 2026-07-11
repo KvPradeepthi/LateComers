@@ -1,0 +1,168 @@
+.branchCardWrapper {
+    position: relative; /* Required for absolute positioning of the glare */
+    overflow: hidden; /* Ensure glare doesn't overflow the card */
+    opacity: 1; /* Reset opacity to fully visible */
+}
+
+/* Glare effect */
+.card-glare {
+    content: '';
+    position: absolute;
+    top: 0; /* Center vertically */
+    left: -100%; /* Start from the left outside the card */
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 100%); /* Increased whiteness */
+    pointer-events: none; /* Make sure the glare doesn't capture mouse events */
+    opacity: 0; /* Initially hidden */
+    z-index: 1; /* Set a z-index to overlay the card */
+    transition: opacity 0.3s; /* Smooth transition for opacity */
+}
+
+.branchCardWrapper:hover .card-glare {
+    opacity: 0.4; /* Keep the glare visible on hover */
+    animation: move-glare 1s forwards; /* Move the glare across the card */
+}
+
+@keyframes move-glare {
+    0% {
+        left: -100%; /* Start from the left outside the card */
+        opacity: 0.4; /* Set initial opacity */
+    }
+    100% {
+        left: 100%; /* Move to the right outside the card */
+        opacity: 0; /* Fade out at the end */
+    }
+}
+
+/* Card styles */
+.card {
+    position: relative; /* Ensure the card content is above the glare */
+    z-index: 2; /* Higher z-index than glare */
+}
+
+/* Ensure content within the card respects border radius */
+.branchesContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 30px;
+    color: white;
+    padding-bottom: 40px;
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+
+.branchCards {
+    overflow: hidden;
+    border-radius: 8% 8% 8% 8%; /* Rounded edges on the card */
+    height: 200px;
+    width: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    gap: 20px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.branchCards:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.branchLogo {
+    height: 80px;
+    width: 80px;
+    border-radius: 50%; /* Keep circular image */
+}
+
+.d-flex .img-fluid {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-top-left-radius: 8%; /* Rounded only on the top */
+    border-top-right-radius: 8%;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.dataSpace {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Styles for counts section */
+.left {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    align-content: center;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.stdData2 {
+    width: 250px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    align-content: center;
+}
+
+.cnt2 {
+    height: 100%;
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    align-content: center;
+}
+
+.cnt2 p:first-child {
+    font-size: 15px;
+}
+
+/* Count circle styling */
+.cnt2 p:nth-child(2) {
+    height: 45px;
+    width: 45px;
+    font-size: 16px;
+    text-align: center;
+    align-content: center;
+    color: black;
+    border-radius: 50%;
+    background-color: #FFEB00;
+}
+
+/* Fade in effect for today's count */
+.today-count {
+    opacity: 0; /* Hidden by default */
+    transition: opacity 0.5s ease-in; /* Fade in effect */
+}
+
+.branchCardWrapper:hover .today-count {
+    opacity: 1; /* Show when hovered */
+}
+
+/* Fade in effect for month count */
+.month-count {
+    opacity: 0; /* Hidden by default */
+    transition: opacity 0.5s ease-in; /* Fade in effect */
+}
+
+.branchCardWrapper:hover .month-count {
+    opacity: 1; /* Show when hovered */
+}
