@@ -17,9 +17,9 @@ services:
       - key: GEMINI_API_KEY
         sync: false
 
-staticSites:
   # Frontend React Static Site
-  - name: latecomers-frontend
+  - type: static
+    name: latecomers-frontend
     rootDir: Latecomers_Frontend
     buildCommand: npm install --legacy-peer-deps && npm run build
     publishDir: build
