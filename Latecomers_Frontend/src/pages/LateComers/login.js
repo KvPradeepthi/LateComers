@@ -174,18 +174,20 @@ const Login = (props) => {
                         </div>
                       </Row>
                     </Form>
+                    <div className="mt-4 pt-2 text-center text-muted border-top">
+                      <p className="mb-1 font-size-13">
+                        <strong>Demo Admin:</strong> admin@demo.edu / demo1234
+                      </p>
+                      <p className="mb-0 font-size-13">
+                        <strong>Demo HOD:</strong> hod@demo.edu / demo1234
+                      </p>
+                    </div>
                   </div>
                 </CardBody>
               </Card>
 
               <div className="mt-5 text-center">
-                © {new Date().getFullYear()} Late Comers{" "}
-                <span className="d-none d-sm-inline-block" style={{ whiteSpace: "nowrap" }}>
-                  <span className="d-inline-flex align-items-center gap-1">
-                    <span>- Crafted with</span>
-                    <i className="mdi mdi-heart text-danger"></i>
-                  </span>
-                </span>
+                © {new Date().getFullYear()} Campus Attendance Management System | Built by Veera Pradeepthi
               </div>
             </Col>
           </Row>
