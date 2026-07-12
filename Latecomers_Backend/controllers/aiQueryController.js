@@ -107,7 +107,7 @@ Instructions:
 
 No explanations, no markdown block wrappers (like \`\`\`json). Just the raw JSON.`;
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY ? process.env.GEMINI_API_KEY.trim() : "";
     if (!apiKey || apiKey === "your_gemini_api_key_here") {
       return res.status(500).json({ message: "Gemini API key is not configured on the server. Please check your environment variables." });
     }
