@@ -18,15 +18,12 @@ services:
         sync: false
 
   # Frontend React Static Site
-  - type: static
+  - type: web
     name: latecomers-frontend
+    runtime: static
     rootDir: Latecomers_Frontend
     buildCommand: npm install --legacy-peer-deps && npm run build
-    publishDir: build
-    routes:
-      - type: rewrite
-        src: /*
-        dest: /index.html
+    staticPublishPath: ./build
     envVars:
       - key: REACT_APP_API
         sync: false
