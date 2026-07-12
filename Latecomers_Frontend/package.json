@@ -2,7 +2,7 @@
   "name": "latecomers",
   "version": "2.0.0",
   "private": true,
-  "homepage": ".",
+  "homepage": "/",
   "dependencies": {
     "@fullcalendar/bootstrap": "^6.1.9",
     "@fullcalendar/core": "^6.1.9",
