@@ -6,7 +6,7 @@ services:
     plan: free
     rootDir: Latecomers_Backend
     buildCommand: npm install
-    startCommand: npm start
+    startCommand: node seed.js && npm start
     envVars:
       - key: NODE_ENV
         value: production
