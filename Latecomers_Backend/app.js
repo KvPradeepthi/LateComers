@@ -59,6 +59,36 @@ app.use('/api', loginRouter);
 app.use('/api', examScheduleRouter);
 app.use('/api', aiQueryRouter);
 
+app.get('/api/db-check', async (req, res) => {
+  try {
+    const readyState = mongoose.connection.readyState;
+    const states = ["disconnected", "connected", "connecting", "disconnecting"];
+    let queryTest = "not attempted";
+    let errorDetail = null;
+    
+    try {
+      if (readyState === 1) {
+        const count = await mongoose.connection.db.collection("studentsschemas").countDocuments({});
+        queryTest = `Success! Count: ${count}`;
+      } else {
+        queryTest = "Skipped (not connected)";
+      }
+    } catch (dbErr) {
+      queryTest = "Failed";
+      errorDetail = dbErr.message || dbErr;
+    }
+
+    return res.status(200).json({
+      connectionState: states[readyState] || readyState,
+      queryTest: queryTest,
+      errorDetail: errorDetail,
+      dbUrlMasked: process.env.DBURL ? process.env.DBURL.replace(/\/\/([^:]+):([^@]+)@/, "//***:***@") : "not set"
+    });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 // Monthly Report Cron Job
 
 function isLastDayOfMonth() {
