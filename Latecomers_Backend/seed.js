@@ -175,13 +175,11 @@ const seed = async () => {
     const dates = [];
     for (let d = 30; d >= 0; d--) {
       const dt = today.clone().subtract(d, "days");
-      // Skip Sundays for historical days, but always include today
-      if (dt.day() !== 0 || d === 0) {
-        dates.push(dt);
-      }
+      // Include all 30 days (including Sundays, with weekend lab/library entries)
+      dates.push(dt);
     }
 
-    console.log(`Generating deterministic attendance for ${dates.length} days (including TODAY)...`);
+    console.log(`Generating deterministic attendance for ${dates.length} days (including TODAY and all weekends)...`);
 
     const studentGateAttendance = [];
     const studentBuildingAttendance = [];
@@ -199,14 +197,19 @@ const seed = async () => {
     for (const date of dates) {
       const dateVal = date.toDate();
       const isToday = (dayIndex === dates.length - 1);
+      const isSunday = (date.day() === 0);
 
       // --- Student Gate & Building Records ---
       for (let i = 0; i < studentsMasterData.length; i++) {
         const student = studentsMasterData[i];
         
-        // Deterministic attendance decision
-        // Student arrives on days where (i + dayIndex) % 7 !== 0
-        const isPresent = isToday ? (i < 30) : ((i + dayIndex) % 7 !== 0);
+        // Deterministic attendance decision:
+        // On Sundays: ~15 students attend weekend labs / library prep (i % 3 === 0)
+        // On Weekdays: regular attendance (~38 students)
+        // Today: guaranteed 30 students
+        const isPresent = isToday 
+          ? (i < 30) 
+          : (isSunday ? (i % 3 === 0) : ((i + dayIndex) % 7 !== 0));
         if (!isPresent) continue;
 
         let isLate = false;
@@ -264,24 +267,21 @@ const seed = async () => {
             gender: student.gender,
             fatherName: student.fatherName,
             fatherMobile: student.fatherMobile,
+            building: assignedBuilding,
             date: dateVal,
             inTime: bInTime,
-            outTime: outTime,
-            building: assignedBuilding,
-            scannedBy: "Security Terminal 1"
+            outTime: outTime
           });
         }
       }
 
-      // --- Faculty Attendance Records ---
-      for (let f = 0; f < facultyMasterData.length; f++) {
-        // Faculty present on days where (f + dayIndex) % 5 !== 0
-        const fPresent = isToday ? (f < 12) : ((f + dayIndex) % 5 !== 0);
-        if (!fPresent) continue;
-
-        const fac = facultyMasterData[f];
-        const fInTime = ((f + dayIndex) % 4 === 0) ? "09:35 AM" : "08:50 AM";
-
+      // --- Faculty Attendance ---
+      // On Sundays: 4 faculty members on duty / lab in-charge
+      // On Weekdays: 8-12 faculty members
+      const facAttendanceCount = isToday ? 8 : (isSunday ? 4 : (8 + (dayIndex % 5)));
+      for (let f = 0; f < facAttendanceCount; f++) {
+        const fac = facultyMasterData[f % facultyMasterData.length];
+        const fInTime = (f + dayIndex) % 4 === 0 ? "09:35 AM" : "08:50 AM";
         facultyAttendance.push({
           facultyName: fac.facultyName,
           facultyId: fac.facultyId,
@@ -293,12 +293,12 @@ const seed = async () => {
           facultyGender: fac.facultyGender,
           date: dateVal,
           inTime: fInTime,
-          outTime: "04:45 PM"
+          outTime: "04:30 PM"
         });
       }
 
       // --- Visitor Logs (3-5 visitors per day, guaranteed visitors TODAY) ---
-      const numVisitors = isToday ? 8 : (3 + (dayIndex % 3));
+      const numVisitors = isToday ? 8 : (isSunday ? 4 : (3 + (dayIndex % 3)));
       for (let v = 0; v < numVisitors; v++) {
         const vIndex = (dayIndex * 4 + v);
         const visitorName = `Visitor ${studentNames[vIndex % studentNames.length]}`;

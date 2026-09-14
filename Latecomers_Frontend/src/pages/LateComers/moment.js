@@ -781,30 +781,7 @@ const GetInfo = props => {
             Enter Student ID / Employee ID
           </Label>
           <AvForm onSubmit={handleInSubmit} className="form">
-            {!isAdmin ? (
-              <div className="w-100">
-                <AvField
-                  name="inSearchParameter"
-                  type="text"
-                  errorMessage="Please enter search parameter"
-                  className="form-control input-field"
-                  value={inSearchParameter}
-                  onChange={handleInInputChange}
-                  placeholder="Scan code here"
-                  validate={{ required: { value: true } }}
-                  innerRef={inputRef}
-                  autoFocus
-                />
-                <Button
-                  type="button"
-                  color="info"
-                  className="btn-scanner py-2 px-3 w-100 mt-3"
-                  onClick={() => handleOpenScanner("in")}
-                >
-                  <i className="mdi mdi-camera-outline font-size-16" /> Scan
-                </Button>
-              </div>
-            ) : (
+            <div className="w-100">
               <AvField
                 name="inSearchParameter"
                 type="text"
@@ -817,7 +794,15 @@ const GetInfo = props => {
                 innerRef={inputRef}
                 autoFocus
               />
-            )}
+              <Button
+                type="button"
+                color="info"
+                className="btn-scanner py-2 px-3 w-100 mt-2"
+                onClick={() => handleOpenScanner("in")}
+              >
+                <i className="mdi mdi-camera-outline font-size-16 me-1" /> Scan with Camera
+              </Button>
+            </div>
             <Button type="submit" style={{ display: "none" }}>
               Submit
             </Button>
@@ -830,18 +815,28 @@ const GetInfo = props => {
               Enter Student ID / Employee ID
             </Label>
             <AvForm onSubmit={handleOutSubmit} className="form">
-              <AvField
-                name="outSearchParameter"
-                type="text"
-                errorMessage="Please enter search parameter"
-                className="form-control input-field"
-                value={outSearchParameter}
-                onChange={handleOutInputChange}
-                placeholder="Scan code here"
-                validate={{ required: { value: true } }}
-                innerRef={inputRef}
-                autoFocus
-              />
+              <div className="w-100">
+                <AvField
+                  name="outSearchParameter"
+                  type="text"
+                  errorMessage="Please enter search parameter"
+                  className="form-control input-field"
+                  value={outSearchParameter}
+                  onChange={handleOutInputChange}
+                  placeholder="Scan code here"
+                  validate={{ required: { value: true } }}
+                  innerRef={inputRef}
+                  autoFocus
+                />
+                <Button
+                  type="button"
+                  color="info"
+                  className="btn-scanner py-2 px-3 w-100 mt-2"
+                  onClick={() => handleOpenScanner("out")}
+                >
+                  <i className="mdi mdi-camera-outline font-size-16 me-1" /> Scan with Camera
+                </Button>
+              </div>
               <Button type="submit" style={{ display: "none" }}>
                 Submit
               </Button>
