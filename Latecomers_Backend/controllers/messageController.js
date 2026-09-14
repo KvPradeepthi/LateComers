@@ -387,7 +387,7 @@ const sendDailyMessage = async () => {
       try {
         await axios
           .post(
-            "http://172.7.182.2:5001/api/Student-Weekly-Message-Sender",
+            `${process.env.API_URL || "http://localhost:5001/api"}/Student-Weekly-Message-Sender`,
             data
           )
           .then((result) => {

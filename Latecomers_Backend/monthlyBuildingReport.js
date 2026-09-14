@@ -388,6 +388,11 @@ async function sendEmail(excelFilePath, students) {
     ],
   };
 
+  if (process.env.DEMO_MODE !== "false" || !process.env.EMAIL_USE || process.env.EMAIL_USE.includes("demo.edu")) {
+    console.log(`[DEMO_MODE] Simulated monthly building email: "${mailOptions.subject}" to ${mailOptions.to}`);
+    return { messageId: "simulated-demo-building-message-id" };
+  }
+
   const info = await transporter.sendMail(mailOptions);
   console.log(`  → Monthly building email sent! Message ID: ${info.messageId}`);
   return info;

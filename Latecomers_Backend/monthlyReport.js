@@ -333,6 +333,11 @@ async function sendEmail(excelFilePath, recordCount) {
     ],
   };
 
+  if (process.env.DEMO_MODE !== "false" || !process.env.EMAIL_USE || process.env.EMAIL_USE.includes("demo.edu")) {
+    console.log(`[DEMO_MODE] Simulated monthly email: "${mailOptions.subject}" to ${mailOptions.to}`);
+    return { messageId: "simulated-demo-message-id" };
+  }
+
   const info = await transporter.sendMail(mailOptions);
   console.log(`  → Email sent! Message ID: ${info.messageId}`);
   return info;

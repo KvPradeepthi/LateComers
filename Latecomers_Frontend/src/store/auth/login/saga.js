@@ -15,45 +15,23 @@ import axios from "axios";
 const fireBaseBackend = getFirebaseBackend();
 
 function* loginUser({ payload: { user, history } }) {
-
   const base_url = process.env.REACT_APP_API;
-  console.log(base_url);
 
   try {
-    let response;
-    console.log('testing')
-    if (user) {
-      response = axios.post(base_url + "/get-admin-login", user);
-      console.log(response);
-      if (response) {
-        console.log(response)
-        response.then((result) => {
-          const userdt = result.data.userdt;
-          localStorage.setItem("authUser", JSON.stringify(userdt));
-          if (userdt && userdt.role === "building") {
-            history("/moment");
-          } else {
-            history("/dashboard");
-          }
-          console.log(userdt);
-        }).catch((error) => {
-          alert('Enter Valid Credentials')
-          console.error('Promise rejected:', error);
-        });
-      }
-      else {
-        alert('Enter Valid Credentials')
-      }
-
+    const response = yield call(axios.post, `${base_url}/get-admin-login`, user);
+    if (response && response.data && response.data.userdt) {
+      const userdt = response.data.userdt;
+      localStorage.setItem("authUser", JSON.stringify(userdt));
+      yield put(loginSuccess(userdt));
+      // Demo login routes directly to dashboard
+      history("/dashboard");
     } else {
-      console.log('ghjk,')
+      yield put(apiError("Invalid demo credentials."));
     }
-
   } catch (error) {
-    alert('Enter Valid Credentials')
-    console.log('Login error:', error);
-    // Dispatch apiError action here if you're using Redux
-    // yield put(apiError(error));
+    const message = error.response?.data?.message || "Invalid credentials or backend unavailable.";
+    yield put(apiError(message));
+    console.error("Login error:", error);
   }
 }
 

@@ -11,8 +11,6 @@ Router.get("/get-SuspendList" , getSuspendList)
 
 Router.post("/get-Studentss" , getStudentData)
 
-Router.post("/get-Studentss" , getStudentData)
-
 Router.post('/upload-csv', upload, bulkUploadHandler);
 
 module.exports = Router

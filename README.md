@@ -1,8 +1,18 @@
-# Campus Attendance & Latecomers Management System
+# Campus Attendance & Visitor Management System (LateComers)
 
-A production-grade, sanitized **MERN (MongoDB, Express, React, Node.js)** full-stack application designed to track and manage student and faculty attendance at campus entry gates and academic building checkpoints. 
+A full-stack **MERN (MongoDB, Express, React, Node.js)** web application designed for comprehensive campus attendance tracking, digital gate checkpoints, building-level verification, and visitor pass administration.
 
-This repository represents the **sanitized public portfolio version** of the system, tailored with demo credentials, simulated lookup endpoints, and a mock seeder script. It features an advanced **AI-powered Natural Language Query Module** integrated with the **Gemini API** for secure, intuitive reporting.
+> **Portfolio Demo Notice:**  
+> This repository contains a **sanitized public portfolio demonstration** of a real-world campus attendance system deployed across collegiate checkpoints. All institutional infrastructure addresses, private keys, and student records have been replaced with **fictional datasets and demo-safe integrations**.
+
+---
+
+## 🎯 Live Recruiter Demo
+
+* **Public Web App**: [https://latecomers-frontend.onrender.com](https://latecomers-frontend.onrender.com)
+* **Demo Account**: `demo@demo.edu`
+* **Password**: `demo1234`
+* **One-Click Access**: The login screen features an **`[ Enter Demo ]`** button for immediate, single-click access with pre-filled credentials.
 
 ---
 
@@ -10,154 +20,124 @@ This repository represents the **sanitized public portfolio version** of the sys
 
 ```mermaid
 graph TD
-    Client[React Frontend / Dashboard] <-->|JSON REST API| Server[Express Node.js Backend]
+    Client[React Dashboard & Checkpoints UI] <-->|JSON REST API| Server[Express Node.js REST API]
     Server <-->|Mongoose ODM| DB[(MongoDB Local / Atlas)]
-    Server -->|Nodemailer / SMTP| MailServer[SMTP Mail Server]
-    Server -->|REST POST| SMSGateway[SMS Alert Gateway]
-    Server -->|REST API Key| GeminiAPI[Google Gemini 2.5 API]
-    Server -->|Axios JSON| StudentRegistry[Simulated Student API Registry]
+    Server -->|Rule-Based Parser| NLPEngine[Natural Language Query Engine]
+    Server -->|Simulated Notification Engine| DemoAlerts[DEMO_MODE Notification Mock]
+    Server -->|ExcelJS / XLSX| ReportEngine[Automated Excel / CSV Generator]
 ```
 
-### Key Components
-1. **React Frontend**: A premium responsive dashboard based on Reactstrap with live data charts (Chart.js), barcode scanning modal interfaces, and an AI search console.
-2. **Express Backend**: Secure REST API handling gate scans, building scans, visitor logs, exam schedules, and user roles.
-3. **Cron Job Engine**: Autonomous Node-Cron tasks compiling monthly latecomer reports into formatted Excel spreadsheets and emailing them via SMTP.
-4. **AI Query Assistant**: Translates plain-English inquiries into secure Mongoose filters, providing rate-limited, validated data views to HODs and Admins.
+### Key Technical Pillars
+1. **React Frontend**: Built on React 18 and Reactstrap with responsive dashboards, interactive Chart.js analytics, modal-based barcode scanning interfaces, and one-click demo access.
+2. **Express Backend**: Secure REST API handling attendance logs, building scans, visitor registers, exam schedules, and master student records.
+3. **Natural Language Query Assistant**: A deterministic, rule-based NLP assistant that parses conversational English queries into secure MongoDB filters with transparent query breakdowns.
+4. **Automated Reporting Engine**: Generates daily, weekly, and monthly attendance and latecomer reports formatted into downloadable Excel (.xlsx) spreadsheets.
+5. **Deterministic Seeding Engine**: Populates 30 days of consistent attendance history (~1,100 gate logs, ~1,000 building logs, visitors, faculty check-ins, and active exam schedules), with guaranteed rich entries for **Today**.
 
 ---
 
-## ⚡ Key Features
+## ⚡ Core Features & Live-System Parity
 
-* **Checkpoints Tracking**: Barcode scanning interfaces for Gate Entry and Building Entry (using local mock validation endpoints).
-* **Automatic Warn Messages**: Real-time SMS warning system sending alerts to parents when students exceed latecomer thresholds.
-* **Monthly Cron Reports**: Scheduled tasks calculating late statistics and emailing formatted Excel sheets to relevant campus HODs.
-* **Faculty Check-Ins**: Dedicated tracking dashboard for staff arrivals.
-* **Security Sanitized**: Removed all production environment credentials, VISPL SMS gateway keys, personal SMTP passwords, and confidential student datasets.
-* **High-Fidelity Database Seeder**: Generates 30 days of realistic history (~1,100 gate entries, ~1,000 building entries, faculty checks, exams, and visitors) with different attendance profiles (e.g. chronic latecomers, occasional latecomers, on-time).
+* **Digital Checkpoint Tracking**: Gate Entry and Academic Building check-in interfaces with automated latecomer status determination (arrivals after 09:30 AM).
+* **Visitor Pass Management**: Comprehensive visitor registration logging visitor name, mobile, vehicle number, purpose of visit, person to meet, check-in, and check-out tracking.
+* **Student & Faculty Analysis**: Deep-dive analytics providing branch-wise breakdowns, college comparisons, gender ratios, and chronic latecomer frequency tracking.
+* **Automated Reports**: Downloadable Excel and CSV exports for daily arrivals, weekly trends, and month-end summaries.
+* **Student Suspension Enforcement**: Centralized suspension register that prevents unauthorized campus gate entry for flagged students.
+* **Exam Schedule Monitoring**: Timelines for internal and semester examinations.
+* **Query Assistant**: Plain-English attendance query tool with transparent filter interpretation (Target, Branch, Date Range, Condition, and Records Found).
+* **Demo-Safe Notifications**: Configured with `DEMO_MODE=true` to simulate parent SMS alerts and admin email reports safely without external delivery dependencies.
 
 ---
 
-## 🗄️ Database Schemas
+## 🗄️ Database Schema Overview
 
-The database structure consists of **9 Mongoose Schemas** mapped to MongoDB collections:
+The application utilizes **9 Mongoose Schemas** mapped to MongoDB collections:
 
 | Collection | Schema Name | Description | Key Fields |
 |:---|:---|:---|:---|
-| `loginschemas` | `LoginSchema` | User credentials and authorization roles. | `username`, `password`, `role`, `building` |
-| `studentmasters` | `studentMaster` | Student registry containing master info. | `studentName`, `studentRoll` (unique), `college`, `branch`, `suspended` |
-| `studentschemas` | `studentsSchema` | Gate arrival attendance scans. | `studentRoll`, `date`, `inTime`, `outTime` |
-| `studentbuildingschemas` | `studentBuildingSchema` | Building scan attendance logs. | `studentRoll`, `building`, `date`, `inTime` |
-| `facultydatabases` | `facultyDataBase` | Master faculty registry database. | `facultyName`, `facultyId`, `facultyCollege`, `facultyBranch` |
-| `facultyschemas` | `facultySchema` | Faculty check-in logs. | `facultyId`, `date`, `inTime` |
-| `visitordatas` | `visitordata` | Visitor gate pass passes register. | `visitorName`, `passNumber`, `personToMeet`, `inDate`, `inTime` |
-| `examschedules` | `examSchedule` | Internal exam timelines for daily scheduling. | `examName`, `collegeCode`, `program`, `startDate`, `endDate` |
-| `errorschemas` | `errorSchema` | Log of card scanner failures. | `studentRoll`, `date` |
+| `loginschemas` | `LoginSchema` | Demo credentials and authorization roles | `username`, `password`, `role`, `building` |
+| `studentmasters` | `studentMaster` | Student master registry | `studentName`, `studentRoll` (unique), `college`, `branch`, `suspended` |
+| `studentschemas` | `studentsSchema` | Gate arrival attendance scans | `studentRoll`, `date`, `inTime`, `outTime` |
+| `studentbuildingschemas` | `studentBuildingSchema` | Academic building check-ins | `studentRoll`, `building`, `date`, `inTime` |
+| `facultydatabases` | `facultyDataBase` | Master faculty registry | `facultyName`, `facultyId`, `facultyCollege`, `facultyBranch` |
+| `facultyschemas` | `facultySchema` | Faculty arrival logs | `facultyId`, `date`, `inTime` |
+| `visitordatas` | `visitordata` | Campus visitor passes | `visitorName`, `vehicleNumber`, `personToMeet`, `purpose`, `status` |
+| `examschedules` | `examSchedule` | Semester examination schedules | `examName`, `collegeCode`, `program`, `startDate`, `endDate` |
+| `errorschemas` | `errorSchema` | Scanner diagnostic logs | `studentRoll`, `date` |
 
 ---
 
-## 🛠️ Project Setup & Installation
+## 🛠️ Local Installation & Setup
 
 ### Prerequisites
-* **Node.js** (v18+)
-* **MongoDB** (Local instance running on `27017` or Atlas Connection String)
-* **Gemini API Key** (Required for the AI module)
+* **Node.js** (v18 or higher)
+* **MongoDB** (Local instance on `mongodb://127.0.0.1:27017` or MongoDB Atlas URI)
 
-### 1. Environment Configurations
-Configure the local `.env` file inside both project folders:
-
-#### Backend Config (`Latecomers_Backend/.env`)
-```env
-PORT=5001
-DBURL=mongodb://127.0.0.1:27017/latecomers_demo
-GEMINI_API_KEY=your_gemini_api_key_here
-
-# SMS Gateway Config
-DAILYMSGURL=https://api.demo.edu/sms/send
-SMS_USER=your_sms_gateway_username
-SMS_PASS=your_sms_gateway_password
-
-# Mail SMTP Config
-MAIL_HOST=smtp.demo.edu
-MAIL_PORT=587
-MAIL_USER=your_mail_user@demo.edu
-MAIL_PASS=your_mail_password
-MAIL_FROM="Monthly Report" <your_mail_from@demo.edu>
-MAIL_RECIPIENTS=recipient1@demo.edu
-```
-
-#### Frontend Config (`Latecomers_Frontend/.env`)
-```env
-PORT=8080
-REACT_APP_DEFAULTAUTH=fake
-REACT_APP_API=http://localhost:5001/api
-```
-
-### 2. Dependency Installation & Seeding
-Install backend and frontend dependencies, and seed the demo database with mock data.
-
+### 1. Backend Setup
 ```bash
-# Setup Backend
 cd Latecomers_Backend
+
+# Install dependencies
 npm install
-node seed.js     # Seeds local database with 30-day realistic log history
 
-# Setup Frontend
-cd ../Latecomers_Frontend
-npm install --legacy-peer-deps
+# Seed the database with 30-day realistic history + Today's data
+npm run seed
+
+# Start the backend server (runs on port 5001)
+npm start
 ```
 
-### 3. Running the Project
+### 2. Frontend Setup
 ```bash
-# Start Backend (runs on http://localhost:5001)
-cd Latecomers_Backend
-npm start
+cd Latecomers_Frontend
 
-# Start Frontend (runs on http://localhost:8080)
-cd ../Latecomers_Frontend
+# Install dependencies
+npm install --legacy-peer-deps
+
+# Start the React development server (runs on port 8080)
 npm start
 ```
 
-Use the following credentials to log in:
-* **Admin Role**: `admin@demo.edu` / `demo1234`
-* **HOD Role**: `hod@demo.edu` / `demo1234`
+### 3. Log In
+Open your browser at `http://localhost:8080` and click **`[ Enter Demo ]`** or log in manually with:
+* **Email:** `demo@demo.edu`
+* **Password:** `demo1234`
 
 ---
 
-## 🤖 AI Natural Language Query Module
+## 🔍 Natural Language Query Assistant
 
-The system contains an **AI Search Console** restricted to Admins and HODs. Users can search attendance logs using conversational English:
+The system includes a conversational query assistant that translates English attendance queries into structured MongoDB queries:
 
-* *"Show BBA students who came late this week"*
-* *"Who entered Ratan Tata Bhavan building late yesterday?"*
-* *"Find student Aarav Sharma's gate entries"*
+* *"Show CSE students who arrived late this week"*
+* *"Who entered Ratan Tata Bhavan yesterday?"*
+* *"Show latecomers this month"*
+* *"Find Aarav Sharma's attendance"*
+* *"Show BBA students who arrived late"*
 
-### Security Workflow
-1. **Request Verification**: The backend restricts incoming requests to logged-in sessions matching `admin` or `hod` roles.
-2. **Strict Metadata Constraints**: The prompt injected into Gemini limits the response strictly to a predefined JSON schema containing allowed model fields (`studentRoll`, `studentName`, `collegeCode`, `date`, `inTime`, `building`) and operators (`equals`, `contains`, `gte`, `lte`, `between`).
-3. **Mongoose Sanitization**: The server parses the returned JSON filters, escapes regex inputs to prevent injection attacks, wraps date parameters in `Date` objects, limits the output length to **100 records**, and executes the query cleanly.
-4. **Memory Rate Limiter**: Rate-limits AI queries to a maximum of **10 requests per minute** per user to prevent API abuse.
-
----
-
-## 🚀 One-Click Cloud Deployment (Render Blueprint)
-
-This project is pre-configured with a Render Blueprint (`render.yaml`) that lets you deploy both the React Frontend and the Express Backend simultaneously.
-
-[![Deploy to Render](https://render.com/images/deploy-to-render.button.svg)](https://render.com/deploy?repo=https://github.com/KvPradeepthi/LateComers)
-
-### Deployment Steps:
-1. Click the **Deploy to Render** button above.
-2. In the Render configuration dashboard, fill in the required environment variables:
-   - `DBURL`: Your MongoDB Atlas Connection String.
-   - `GEMINI_API_KEY`: Your Google Gemini API Key.
-   - `MAIL_USER` / `MAIL_PASS`: SMTP email details for reports (optional).
-3. Click **Apply**.
-4. Render will automatically spin up your Node.js backend web service and build/deploy your React frontend as a static site, linking them together automatically.
+### Transparent Interpretation
+When a query executes, the assistant presents a clear **Query Interpretation** breakdown displaying:
+* **Target Log:** Gate Attendance vs. Building Scan
+* **Branch Filter:** e.g., CSE, BBA, All
+* **Date Range:** Today, Yesterday, Last 7 Days, Last 30 Days
+* **Condition:** Late Entry (Arrived after 09:30 AM), Student Roll, etc.
+* **Total Records Found**
 
 ---
 
-## 📝 Contributions & Credits
+## 🚀 Cloud Deployment (Render Blueprint)
 
-* **Author**: Built by Veera Pradeepthi
-* **Branding**: Cleaned portfolio-safe Campus Attendance Management System.
-* **Disclaimer**: This is a sanitized portfolio simulation based on a real-world system deployed for collegiate attendance administration. All personnel, roles, and contacts shown in the demo seeder are mock placeholders.
+This project includes a validated `render.yaml` blueprint for one-click deployment:
+
+1. Connect this repository to **Render Blueprints**.
+2. Set the `DBURL` environment variable for `latecomers-backend` to your MongoDB Atlas connection string.
+3. Render automatically builds and hosts the Node.js backend and React static frontend.
+4. Run `npm run seed` in your Render Shell once to populate your cloud database.
+
+---
+
+## 📝 Credits & Attribution
+
+* **Author:** Built by Veera Pradeepthi
+* **License:** ISC
+* **Environment:** Sanitized Portfolio Demo Version

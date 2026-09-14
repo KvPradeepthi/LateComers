@@ -4,96 +4,57 @@ import { Navigate } from "react-router-dom"
 // Profile
 import UserProfile from "../pages/Authentication/user-profile"
 
-
 // Authentication related pages
 import Login from "pages/LateComers/login"
 import Logout from "../pages/Authentication/Logout"
-import Register from "../pages/Authentication/Register"
-import ForgetPwd from "../pages/Authentication/ForgetPassword"
+import Pages404 from "../pages/Extra Pages/pages-404"
+import Pages500 from "../pages/Extra Pages/pages-500"
 
-// Inner Authentication
-import Login1 from "../pages/AuthenticationInner/Login"
-import Register1 from "../pages/AuthenticationInner/Register"
-import Recoverpw from "../pages/AuthenticationInner/Recoverpw"
-import LockScreen from "../pages/AuthenticationInner/auth-lock-screen"
-
-
-
-// Maps
-import MapsGoogle from "../pages/Maps/MapsGoogle"
-import MapsVector from "../pages/Maps/MapsVector"
-
-
-//Extra Pages
-import PagesTimeline from "../pages/Extra Pages/pages-timeline";
-import PagesInvoice from "../pages/Extra Pages/pages-invoice";
-import PagesDirectory from "../pages/Extra Pages/pages-directory";
-import PagesBlank from "../pages/Extra Pages/pages-blank";
-import Pages404 from "../pages/Extra Pages/pages-404";
-import Pages500 from "../pages/Extra Pages/pages-500";
-import { components } from "react-select"
-
-
-// Late Comer Paegs
+// Late Comers Core Pages
+import Dashboard from "pages/LateComers/newDashboard"
+import Moment from "pages/LateComers/moment"
 import NewVisitors from "pages/LateComers/newVisitors"
 import VisitorsList from "pages/LateComers/visitorsList"
 import Analysis from "pages/LateComers/studentAnalysis"
+import FacultyAnalysis from "pages/LateComers/facultyAnalysis"
+import Branches from "pages/LateComers/branches"
+import StudentDataTable from "pages/LateComers/StudentDataTable"
+import FacultyDataTable from "pages/LateComers/facultyDataTable"
+import SuspendedStudent from "pages/LateComers/suspendedStudent"
+import DailyReport from "pages/LateComers/dailyReport"
 import WeeklyReport from "pages/LateComers/weeklyReport"
 import MonthlyReport from "pages/LateComers/monthlyReport"  
 import Search from "pages/LateComers/search"
-import Empty from "pages/empty"
-import Branches from "pages/LateComers/branches"
-import StudentDataTable from "pages/LateComers/StudentDataTable"
-import Moment from "pages/LateComers/moment"
-import facultyAnalysis from "pages/LateComers/facultyAnalysis"
-import FacultyAnalysis from "pages/LateComers/facultyAnalysis"
-import FacultyDataTable from "pages/LateComers/facultyDataTable"
-import Dashboard from "pages/LateComers/newDashboard"
-import SuspendedStudent from "pages/LateComers/suspendedStudent"
-import BulkUpload from "pages/LateComers/bulkUpload"
-import DailyReport from "pages/LateComers/dailyReport"
 import ExamSchedules from "pages/LateComers/examSchedules"
 import AiQuery from "pages/LateComers/AiQuery"
-
-
+import BulkUpload from "pages/LateComers/bulkUpload"
 
 const userRoutes = [
   { path: "/dashboard", component: <Dashboard /> },
-
-  // // //profile
   { path: "/profile", component: <UserProfile /> },
 
-  // // Maps
-  { path: "/maps-google", component: <MapsGoogle /> },
-  { path: "/maps-vector", component: <MapsVector /> },
+  // Late Comers Core Functionality
+  { path: "/moment", component: <Moment /> },
+  { path: "/new-visitors", component: <NewVisitors /> },
+  { path: "/visitors-list", component: <VisitorsList /> },
+  { path: "/student-analysis", component: <Analysis /> },
+  { path: "/faculty-analysis", component: <FacultyAnalysis /> },
+  { path: "/student-analysis/branches/:college", component: <Branches /> },
+  { path: "/student-analysis/branches/studentdata/:college/:branch", component: <StudentDataTable /> },
+  { path: "/faculty-analysis/facultydata/:college", component: <FacultyDataTable /> },
+  { path: "/empty", component: <SuspendedStudent /> },
+  { path: "/dailyReport", component: <DailyReport /> },
+  { path: "/weekly-report", component: <WeeklyReport /> },
+  { path: "/monthly-report", component: <MonthlyReport /> },
+  { path: "/search", component: <Search /> },
+  { path: "/exam-schedules", component: <ExamSchedules /> },
+  { path: "/ai-query", component: <AiQuery /> },
+  { path: "/bulk-upload", component: <BulkUpload /> },
 
-  // //Extra Pages
-  { path: "/pages-timeline", component: <PagesTimeline /> },
-  { path: "/pages-invoice", component: <PagesInvoice /> },
-  { path: "/pages-directory", component: <PagesDirectory /> },
-  { path: "/pages-blank", component: <PagesBlank /> },
+  // Catch-all
+  { path: "*", component: <Pages404 /> },
 
-  // Late Comers Pages
-  { path: "new-visitors", component: <NewVisitors /> },
-  { path: "visitors-list", component: <VisitorsList /> },
-  { path: "student-analysis", component: <Analysis /> },
-  { path: "weekly-report", component: <WeeklyReport /> },
-  { path: "monthly-report", component: <MonthlyReport /> },
-  { path: "search", component: <Search /> },
-  { path: "student-analysis/branches/:college", component: <Branches /> },
-  { path: "student-analysis/branches/studentdata/:college/:branch", component: <StudentDataTable /> },
-  { path: "faculty-analysis/facultydata/:college", component: <FacultyDataTable /> },
-  { path: "faculty-analysis", component: <FacultyAnalysis /> },
-  { path: "moment", component: <Moment /> },
-  { path: "empty", component: <SuspendedStudent /> },
-  {path : "bulk-upload" , component : <BulkUpload />},
-  { path: "dailyReport", component: <DailyReport /> },
-  { path: "exam-schedules", component: <ExamSchedules /> },
-  { path: "ai-query", component: <AiQuery /> },
-  { path : "*" , component: <Pages404 /> },
-  
-
-  // this route should be at the end of all other routes
+  // Redirect legacy /latecomers
   {
     path: "/latecomers",
     exact: true,
@@ -102,19 +63,17 @@ const userRoutes = [
 ]
 
 const authRoutes = [
-  { path: "/logout", component: <Logout /> },
   { path: "/login", component: <Login /> },
-  { path: "/forgot-password", component: <ForgetPwd /> },
-  { path: "/register", component: <Register /> },
-
+  { path: "/logout", component: <Logout /> },
   { path: "/pages-404", component: <Pages404 /> },
   { path: "/pages-500", component: <Pages500 /> },
-
-  // Authentication Inner
-  { path: "/pages-login", component: <Login1 /> },
-  { path: "/pages-register", component: <Register1 /> },
-  { path: "/page-recoverpw", component: <Recoverpw /> },
-  { path: "/auth-lock-screen", component: <LockScreen /> },
+  // Redirect unused auth template routes directly to login
+  { path: "/register", component: <Navigate to="/login" /> },
+  { path: "/forgot-password", component: <Navigate to="/login" /> },
+  { path: "/pages-login", component: <Navigate to="/login" /> },
+  { path: "/pages-register", component: <Navigate to="/login" /> },
+  { path: "/page-recoverpw", component: <Navigate to="/login" /> },
+  { path: "/auth-lock-screen", component: <Navigate to="/login" /> },
 ]
 
 export { userRoutes, authRoutes }

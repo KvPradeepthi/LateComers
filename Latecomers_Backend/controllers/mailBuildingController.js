@@ -350,6 +350,12 @@ const sendingMails = async (mail, attachment, clg, table, date) => {
       ],
       html: table,
     };
+
+    if (process.env.DEMO_MODE !== "false" || !process.env.EMAIL_USE || process.env.EMAIL_USE.includes("demo.edu")) {
+      console.log(`[DEMO_MODE] Simulated building email: "${mailOptions.subject}" to ${mailOptions.to}`);
+      return;
+    }
+
     await transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.log("Error sending building mail: ", error.message);

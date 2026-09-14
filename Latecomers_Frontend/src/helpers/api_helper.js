@@ -8,10 +8,8 @@ const token = accessToken;
 const API_URL = "process.env.REACT_APP_API";
 
 const axiosApi = axios.create({
-  baseURL: API_URL,
+  baseURL: process.env.REACT_APP_API || "",
 });
-
-axiosApi.defaults.headers.common["Authorization"] = token;
 
 axiosApi.interceptors.response.use(
   (response) => response,

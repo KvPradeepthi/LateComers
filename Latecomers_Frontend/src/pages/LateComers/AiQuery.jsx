@@ -11,19 +11,19 @@ function AiQuery(props) {
   const baseurl = process.env.REACT_APP_API
   const breadcrumbItems = [
     { title: "Campus Attendance", link: "#" },
-    { title: "AI Query Panel", link: "#" },
+    { title: "Query Assistant", link: "#" },
   ]
 
   useEffect(() => {
-    props.setBreadcrumbItems("AI Query Panel", breadcrumbItems)
+    props.setBreadcrumbItems("Query Assistant", breadcrumbItems)
   }, [])
 
   // User details
-  const [userRole, setUserRole] = useState("")
-  const [userId, setUserId] = useState("")
-  const [isAuthorized, setIsAuthorized] = useState(false)
+  const [userRole, setUserRole] = useState("admin")
+  const [userId, setUserId] = useState("demo-user")
+  const [isAuthorized, setIsAuthorized] = useState(true)
 
-  // AI query states
+  // Query states
   const [prompt, setPrompt] = useState("")
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState(null)
@@ -35,12 +35,9 @@ function AiQuery(props) {
       try {
         const authUser = JSON.parse(authUserStr)
         if (authUser) {
-          const role = authUser.role || ""
-          setUserRole(role)
-          setUserId(authUser.username || "")
-          if (role === "admin" || role === "hod") {
-            setIsAuthorized(true)
-          }
+          setUserRole(authUser.role || "admin")
+          setUserId(authUser.username || "demo-user")
+          setIsAuthorized(true)
         }
       } catch (e) {
         console.error("Error reading authUser from localStorage:", e)
@@ -70,12 +67,12 @@ function AiQuery(props) {
         if (res.data.count === 0) {
           toast.info("No matching records found for this query.")
         } else {
-          toast.success(`Successfully found ${res.data.count} records!`)
+          toast.success(`Found ${res.data.count} matching records!`)
         }
       })
       .catch((err) => {
-        console.error("AI Query error:", err)
-        const errMsg = err.response?.data?.message || "Failed to execute AI query. Please verify server connection and API key configuration."
+        console.error("Query error:", err)
+        const errMsg = err.response?.data?.message || "Failed to execute query. Please check server connection."
         setErrorMsg(errMsg)
         toast.error(errMsg)
       })
@@ -95,7 +92,7 @@ function AiQuery(props) {
           <Row>
             <Col sm={12}>
               <Alert color="danger" className="text-center font-size-16 mt-4">
-                <strong>Access Denied:</strong> This AI Query interface is restricted to Admin and HOD roles only.
+                <strong>Access Denied:</strong> This Query interface is restricted to Admin roles.
               </Alert>
             </Col>
           </Row>
@@ -115,12 +112,12 @@ function AiQuery(props) {
                 <div className="d-flex align-items-center mb-3">
                   <div className="avatar-xs mr-3">
                     <span className="avatar-title rounded-circle bg-primary bg-soft text-primary font-size-18">
-                      <i className="mdi mdi-robot"></i>
+                      <i className="mdi mdi-text-box-search-outline"></i>
                     </span>
                   </div>
                   <div>
-                    <h5 className="font-size-18 mb-1">AI Natural Language Query Assistant</h5>
-                    <p className="text-muted mb-0">Ask questions in plain English to automatically query gate or building attendance logs.</p>
+                    <h5 className="font-size-18 mb-1">Natural Language Attendance Query</h5>
+                    <p className="text-muted mb-0">Ask questions in plain English to query gate or building attendance logs via predefined database filters.</p>
                   </div>
                 </div>
 
@@ -131,7 +128,7 @@ function AiQuery(props) {
                         type="textarea"
                         rows="2"
                         className="form-control"
-                        placeholder='Ask something like: "Show BBA students who came late this week" or "Find CSE latecomers in Cotton Bhavan building yesterday"'
+                        placeholder='Try: "Show CSE students who arrived late this week" or "Who entered Ratan Tata Bhavan yesterday?"'
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
                         disabled={loading}
@@ -148,11 +145,11 @@ function AiQuery(props) {
                       >
                         {loading ? (
                           <>
-                            <Spinner size="sm" className="mr-2" /> Querying...
+                            <Spinner size="sm" className="mr-2" /> Searching...
                           </>
                         ) : (
                           <>
-                            <i className="mdi mdi-magnify-plus mr-1"></i> Ask AI
+                            <i className="mdi mdi-magnify mr-1"></i> Run Query
                           </>
                         )}
                       </Button>
@@ -166,25 +163,41 @@ function AiQuery(props) {
                     color="light"
                     className="p-2 mr-2 mb-2 cursor-pointer font-size-12"
                     style={{ cursor: "pointer", border: "1px solid #e1e1e1" }}
-                    onClick={() => handleSampleClick("Show CSE branch students who arrived late at gate this week")}
+                    onClick={() => handleSampleClick("Show CSE students who arrived late this week")}
                   >
-                    "Show CSE branch students arriving late at gate this week"
+                    "Show CSE students who arrived late this week"
                   </Badge>
                   <Badge
                     color="light"
                     className="p-2 mr-2 mb-2 cursor-pointer font-size-12"
                     style={{ cursor: "pointer", border: "1px solid #e1e1e1" }}
-                    onClick={() => handleSampleClick("Who entered Ratan Tata Bhavan building late yesterday?")}
+                    onClick={() => handleSampleClick("Who entered Ratan Tata Bhavan yesterday?")}
                   >
-                    "Who entered Ratan Tata Bhavan building late yesterday?"
+                    "Who entered Ratan Tata Bhavan yesterday?"
                   </Badge>
                   <Badge
                     color="light"
-                    className="p-2 mb-2 cursor-pointer font-size-12"
+                    className="p-2 mr-2 mb-2 cursor-pointer font-size-12"
                     style={{ cursor: "pointer", border: "1px solid #e1e1e1" }}
-                    onClick={() => handleSampleClick("Find student Aarav Sharma's logs")}
+                    onClick={() => handleSampleClick("Show latecomers this month")}
                   >
-                    "Find student Aarav Sharma's logs"
+                    "Show latecomers this month"
+                  </Badge>
+                  <Badge
+                    color="light"
+                    className="p-2 mr-2 mb-2 cursor-pointer font-size-12"
+                    style={{ cursor: "pointer", border: "1px solid #e1e1e1" }}
+                    onClick={() => handleSampleClick("Find Aarav Sharma's attendance")}
+                  >
+                    "Find Aarav Sharma's attendance"
+                  </Badge>
+                  <Badge
+                    color="light"
+                    className="p-2 mr-2 mb-2 cursor-pointer font-size-12"
+                    style={{ cursor: "pointer", border: "1px solid #e1e1e1" }}
+                    onClick={() => handleSampleClick("Show BBA students who arrived late")}
+                  >
+                    "Show BBA students who arrived late"
                   </Badge>
                 </div>
               </CardBody>
@@ -203,27 +216,42 @@ function AiQuery(props) {
           </Row>
         )}
 
-        {/* Query metadata and filters preview */}
+        {/* Query Interpretation Breakdown Box */}
         {results && (
           <Row className="mt-3">
             <Col lg={12}>
-              <Card style={{ border: "none", borderRadius: "12px", boxShadow: "0 4px 12px rgba(0,0,0,0.03)" }}>
+              <Card style={{ border: "1px solid #dcdfe6", borderRadius: "12px", background: "#f8f9fa" }}>
                 <CardBody className="p-3">
-                  <div className="d-flex justify-content-between align-items-center">
-                    <div>
-                      <span className="text-muted mr-2">Target Log:</span>
-                      <Badge color={results.target === "gate" ? "success" : "info"} className="font-size-13 p-2 mr-3">
-                        {results.target === "gate" ? "Gate Arrival Log" : "Building Scan Log"}
+                  <h6 className="font-size-14 text-dark font-weight-bold mb-2">
+                    <i className="mdi mdi-information-outline text-primary mr-1"></i> Query Interpretation
+                  </h6>
+                  <Row className="text-muted font-size-13">
+                    <Col md={3} sm={6} className="mb-2">
+                      <strong>Target Log:</strong>{" "}
+                      <Badge color={results.target === "gate" ? "success" : "info"}>
+                        {results.interpretation?.targetDisplay || (results.target === "gate" ? "Gate Attendance" : "Building Attendance")}
                       </Badge>
-                      <span className="text-muted mr-2">Filters parsed:</span>
-                      <code className="bg-light p-2 rounded text-dark">
-                        {JSON.stringify(results.filters)}
-                      </code>
-                    </div>
-                    <div>
-                      <span className="font-size-14 text-muted">Records found: </span>
-                      <strong className="text-primary font-size-16">{results.count}</strong>
-                    </div>
+                    </Col>
+                    <Col md={3} sm={6} className="mb-2">
+                      <strong>Branch Filter:</strong>{" "}
+                      <span className="text-dark font-weight-medium">{results.interpretation?.branchDisplay || "All Branches"}</span>
+                    </Col>
+                    <Col md={3} sm={6} className="mb-2">
+                      <strong>Date Range:</strong>{" "}
+                      <span className="text-dark font-weight-medium">{results.interpretation?.dateRangeDisplay || "All Time"}</span>
+                    </Col>
+                    <Col md={3} sm={6} className="mb-2">
+                      <strong>Condition:</strong>{" "}
+                      <span className="text-dark font-weight-medium">{results.interpretation?.conditionDisplay || "All Entries"}</span>
+                    </Col>
+                  </Row>
+                  <div className="border-top pt-2 mt-1 d-flex justify-content-between align-items-center">
+                    <span className="text-muted font-size-13">
+                      <strong>Mongoose Filter:</strong> <code>{JSON.stringify(results.queryObj)}</code>
+                    </span>
+                    <span className="font-size-14">
+                      Records Found: <strong className="text-primary font-size-16">{results.count}</strong>
+                    </span>
                   </div>
                 </CardBody>
               </Card>
@@ -248,32 +276,33 @@ function AiQuery(props) {
                           <th>Branch</th>
                           <th>Date</th>
                           <th>Arrival Time</th>
-                          {results.target === "building" && <th>Building Name</th>}
+                          {results.target === "building" && <th>Building</th>}
+                          <th>Status</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {results.data.map((record, index) => (
-                          <tr key={record._id || index}>
-                            <td>{index + 1}</td>
-                            <td style={{ fontWeight: "bold" }}>{record.studentName}</td>
-                            <td>{record.studentRoll}</td>
-                            <td>{record.college}</td>
-                            <td>{record.branch}</td>
-                            <td>{moment(record.date).format("DD-MM-YYYY")}</td>
-                            <td>
-                              <Badge color="danger" pill className="p-2 font-size-11">
-                                <i className="mdi mdi-clock-outline mr-1"></i> {record.inTime}
-                              </Badge>
-                            </td>
-                            {results.target === "building" && (
+                        {results.data.map((item, index) => {
+                          const isLate = item.inTime && (item.inTime.startsWith("09:3") || item.inTime.startsWith("09:4") || item.inTime.startsWith("09:5") || item.inTime.startsWith("10:"));
+                          return (
+                            <tr key={index}>
+                              <td>{index + 1}</td>
+                              <td><strong>{item.studentName}</strong></td>
+                              <td><code>{item.studentRoll}</code></td>
+                              <td>{item.collegeCode || item.college}</td>
+                              <td><Badge color="secondary">{item.branch}</Badge></td>
+                              <td>{moment(item.date).format("DD-MM-YYYY")}</td>
+                              <td>{item.inTime}</td>
+                              {results.target === "building" && <td><Badge color="warning">{item.building}</Badge></td>}
                               <td>
-                                <Badge color="dark" className="p-2 font-size-11">
-                                  <i className="mdi mdi-office-building mr-1"></i> {record.building}
-                                </Badge>
+                                {isLate ? (
+                                  <Badge color="danger" className="p-1">Late</Badge>
+                                ) : (
+                                  <Badge color="success" className="p-1">On-Time</Badge>
+                                )}
                               </td>
-                            )}
-                          </tr>
-                        ))}
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </Table>
                   </div>
@@ -282,28 +311,9 @@ function AiQuery(props) {
             </Col>
           </Row>
         )}
-
-        {/* Empty state when query ran but returned no count */}
-        {results && results.count === 0 && (
-          <Row className="mt-4">
-            <Col lg={12} className="text-center p-5">
-              <div className="avatar-md mx-auto mb-4">
-                <span className="avatar-title rounded-circle bg-light text-primary font-size-24">
-                  <i className="mdi mdi-database-off"></i>
-                </span>
-              </div>
-              <h5 className="font-size-16 text-muted">No attendance logs found matching the parsed query filters.</h5>
-              <p className="text-muted font-size-14">Try adjusting your natural language query (e.g. search for different dates or check spelling of names).</p>
-            </Col>
-          </Row>
-        )}
       </div>
     </React.Fragment>
   )
 }
 
-const mapStateToProps = (state) => {
-  return {}
-}
-
-export default connect(mapStateToProps, { setBreadcrumbItems })(AiQuery)
+export default connect(null, { setBreadcrumbItems })(AiQuery)

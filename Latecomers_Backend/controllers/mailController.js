@@ -647,6 +647,12 @@ const sendingMails = async (mail, gateAttachment, buildingAttachment, clg, table
       ],
       html: table,
     };
+
+    if (process.env.DEMO_MODE !== "false" || !process.env.EMAIL_USE || process.env.EMAIL_USE.includes("demo.edu")) {
+      console.log(`[DEMO_MODE] Simulated email: "${mailOptions.subject}" to ${mailOptions.to}`);
+      return;
+    }
+
     await transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.log("Error occurred: ", error.message);
