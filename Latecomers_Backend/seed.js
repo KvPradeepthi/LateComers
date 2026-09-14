@@ -298,29 +298,31 @@ const seed = async () => {
       }
 
       // --- Visitor Logs (3-5 visitors per day, guaranteed visitors TODAY) ---
-      const visitorCount = isToday ? 8 : (3 + (dayIndex % 3));
-      for (let v = 0; v < visitorCount; v++) {
+      const numVisitors = isToday ? 8 : (3 + (dayIndex % 3));
+      for (let v = 0; v < numVisitors; v++) {
         const vIndex = (dayIndex * 4 + v);
         const visitorName = `Visitor ${studentNames[vIndex % studentNames.length]}`;
         const purpose = ["Campus Admission Inquiry", "Parent Meeting", "Vendor Delivery", "Guest Lecture", "Official Inspection"][v % 5];
         const personToMeet = ["Principal", "HOD CSE", "Dean Academics", "Accounts Section", "Administrative Officer"][v % 5];
         const clg = colleges[v % colleges.length];
+        const isStillIn = isToday && v >= 4;
 
         visitorLogs.push({
+          passNumber: `VISITOR${1000 + vIndex}`,
           visitorName: visitorName,
-          visitorMobile: 9800000000 + (vIndex % 100000),
+          visitorPlace: "Demo City, AP",
+          visitorPhone: 9800000000 + (vIndex % 100000),
           visitorEmail: `visitor${vIndex}@demo.edu`,
-          address: "Demo City, AP",
           personToMeet: personToMeet,
-          purpose: purpose,
-          placeToVisit: clg.name,
-          college: clg.name,
-          vehicleNumber: `AP 05 AB ${1000 + (vIndex % 8999)}`,
+          visitorCount: 1 + (v % 3),
+          visitorPurpose: purpose,
+          placeToGo: clg.name,
+          visitorVehicle: `AP 05 AB ${1000 + (vIndex % 8999)}`,
+          visitorMaterial: v % 3 === 0 ? "Documents / Laptop" : "None",
           inDate: dateVal,
           inTime: `10:${String(15 + (v * 7) % 40).padStart(2, "0")} AM`,
-          outDate: dateVal,
-          outTime: `01:${String(10 + (v * 5) % 45).padStart(2, "0")} PM`,
-          status: isToday && v >= 4 ? "IN" : "OUT"
+          outDate: isStillIn ? null : dateVal,
+          outTime: isStillIn ? null : `01:${String(10 + (v * 5) % 45).padStart(2, "0")} PM`
         });
       }
 
@@ -349,24 +351,24 @@ const seed = async () => {
         program: "B.Tech",
         semester: "IV-II",
         examName: "B.Tech IV-II Semester End Regular Examinations",
-        startDate: today.clone().subtract(3, "days").toDate(),
-        endDate: today.clone().add(7, "days").toDate()
+        startDate: today.clone().subtract(3, "days").format("YYYY-MM-DD"),
+        endDate: today.clone().add(7, "days").format("YYYY-MM-DD")
       },
       {
         collegeCode: "ACET",
         program: "B.Tech",
         semester: "III-II",
         examName: "B.Tech III-II Semester End Regular Examinations",
-        startDate: today.clone().subtract(1, "days").toDate(),
-        endDate: today.clone().add(9, "days").toDate()
+        startDate: today.clone().subtract(1, "days").format("YYYY-MM-DD"),
+        endDate: today.clone().add(9, "days").format("YYYY-MM-DD")
       },
       {
         collegeCode: "ACOP",
         program: "B.Pharm",
         semester: "II-II",
         examName: "B.Pharmacy Mid-Term Examinations",
-        startDate: today.toDate(),
-        endDate: today.clone().add(5, "days").toDate()
+        startDate: today.format("YYYY-MM-DD"),
+        endDate: today.clone().add(5, "days").format("YYYY-MM-DD")
       }
     ]);
 
