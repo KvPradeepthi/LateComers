@@ -59,6 +59,23 @@ app.use('/api', loginRouter);
 app.use('/api', examScheduleRouter);
 app.use('/api', aiQueryRouter);
 
+const { seed } = require("./seed");
+app.all('/api/reset-demo-data', async (req, res) => {
+  if (process.env.DEMO_MODE !== 'true') {
+    return res.status(403).json({ error: "Reset demo data is only permitted when DEMO_MODE is true" });
+  }
+  try {
+    const summary = await seed(false);
+    return res.status(200).json({
+      message: "Demo database reset and re-seeded successfully",
+      summary
+    });
+  } catch (err) {
+    console.error("Error resetting demo database:", err);
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 // Monthly Report Cron Job
 
 function isLastDayOfMonth() {

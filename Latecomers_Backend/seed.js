@@ -15,15 +15,15 @@ const ErrorLog = require("./models/errorSchema");
 
 const dbUrl = process.env.DBURL || "mongodb://127.0.0.1:27017/latecomers_demo";
 
-mongoose.connect(dbUrl, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log("Seeder connected to DB successfully"))
-.catch(err => {
-  console.error("Seeder DB connection failed:", err);
-  process.exit(1);
-});
+const ensureDbConnection = async () => {
+  if (mongoose.connection.readyState !== 1) {
+    await mongoose.connect(dbUrl, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log("Seeder connected to DB successfully");
+  }
+};
 
 const cleanCollections = async () => {
   console.log("Cleaning existing database collections...");
@@ -143,8 +143,9 @@ const generateFacultyMaster = () => {
   return list;
 };
 
-const seed = async () => {
+const seed = async (isCli = false) => {
   try {
+    await ensureDbConnection();
     await cleanCollections();
 
     // 1. Seed Login Accounts
@@ -397,11 +398,30 @@ const seed = async () => {
     console.log(`- Exam Schedules: 3 active schedules`);
     console.log("==================================================\n");
 
-    process.exit(0);
+    if (isCli) {
+      process.exit(0);
+    }
+    return {
+      success: true,
+      studentsMaster: studentsMasterData.length,
+      facultyMaster: facultyMasterData.length,
+      gateAttendance: studentGateAttendance.length,
+      buildingAttendance: studentBuildingAttendance.length,
+      facultyAttendance: facultyAttendance.length,
+      visitors: visitorLogs.length,
+      examSchedules: 3,
+    };
   } catch (error) {
     console.error("Database seeding encountered an error:", error);
-    process.exit(1);
+    if (isCli) {
+      process.exit(1);
+    }
+    throw error;
   }
 };
 
-seed();
+if (require.main === module) {
+  seed(true);
+}
+
+module.exports = { seed };

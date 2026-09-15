@@ -5,7 +5,7 @@ services:
     env: node
     plan: free
     rootDir: Latecomers_Backend
-    buildCommand: npm install
+    buildCommand: npm install && node seed.js
     startCommand: npm start
     envVars:
       - key: NODE_ENV
