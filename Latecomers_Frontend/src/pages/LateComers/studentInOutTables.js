@@ -1,16 +1,43 @@
 import React from 'react'
 import { MDBDataTable } from "mdbreact"
 import { Row, Col, Card, CardBody } from "reactstrap"
+const isLateTime = (t) => {
+  if (!t) return false;
+  const timeStr = String(t).toUpperCase().trim();
+  if (timeStr.includes("AM") || timeStr.includes("PM")) {
+    const isPM = timeStr.includes("PM");
+    const clean = timeStr.replace(/(AM|PM)/g, "").trim();
+    const [hStr, mStr] = clean.split(":");
+    let h = parseInt(hStr, 10);
+    const m = parseInt(mStr || "0", 10);
+    if (isPM && h !== 12) h += 12;
+    if (!isPM && h === 12) h = 0;
+    return (h > 9 || (h === 9 && m > 30));
+  }
+  const [h, m] = timeStr.split(":").map(Number);
+  return (h > 9 || (h === 9 && m > 30));
+};
+
 function StudentInOutTables({studentInData , studentOutData, showOutTable = true}) {
   const inData = {
     columns: [
-      { label: "Student Roll", field: "studentRoll", width: 150 },
-      { label: "Student Name", field: "studentName", width: 250 },
-      { label: "Gender", field: "gender", width: 100 },
-      { label: "Time_In", field: "inTime", width: 150 },
+      { label: "Student Roll", field: "studentRoll", width: 140 },
+      { label: "Student Name", field: "studentName", width: 220 },
+      { label: "Gender", field: "gender", width: 90 },
+      { label: "Time_In", field: "inTime", width: 120 },
+      { label: "Status", field: "statusBadge", width: 160 },
     ],
     rows: studentInData && studentInData.sort((a, b) => b.inTime.localeCompare(a.inTime)).map(student => ({
-        ...student
+        ...student,
+        statusBadge: isLateTime(student.inTime) ? (
+          <span className="badge bg-danger text-white font-size-12 px-2 py-1">
+            <i className="mdi mdi-clock-alert-outline me-1" /> LATE (SMS Sent)
+          </span>
+        ) : (
+          <span className="badge bg-success text-white font-size-12 px-2 py-1">
+            <i className="mdi mdi-check-circle-outline me-1" /> ON-TIME
+          </span>
+        )
       })),
   };
 

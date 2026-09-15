@@ -93,8 +93,8 @@ const facultyNames = [
 const generateStudentsMaster = () => {
   const list = [];
   for (let i = 0; i < studentNames.length; i++) {
-    // 3 suspended students
-    const isSuspended = i < 3 ? "yes" : "no";
+    // 3 suspended students (Rolls 22A91A0501, 22A91A0502, 22A91A0503)
+    const isSuspended = i < 3 ? "YES" : "NO";
     const clg = colleges[i % colleges.length];
     const branch = branches[i % branches.length];
     const passedOutYear = 2025 + (i % 3);
@@ -203,12 +203,17 @@ const seed = async () => {
       for (let i = 0; i < studentsMasterData.length; i++) {
         const student = studentsMasterData[i];
         
+        // Suspended students (i < 3) cannot enter campus or have attendance!
+        if (student.suspended && student.suspended.toUpperCase() === "YES") {
+          continue;
+        }
+
         // Deterministic attendance decision:
         // On Sundays: ~15 students attend weekend labs / library prep (i % 3 === 0)
         // On Weekdays: regular attendance (~38 students)
-        // Today: guaranteed 30 students
+        // Today: guaranteed 30 active students
         const isPresent = isToday 
-          ? (i < 30) 
+          ? (i >= 3 && i < 33) 
           : (isSunday ? (i % 3 === 0) : ((i + dayIndex) % 7 !== 0));
         if (!isPresent) continue;
 

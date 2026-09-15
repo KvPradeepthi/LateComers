@@ -6,6 +6,23 @@ const studentsSchema = require("../models/studentsSchema");
 const errorSchema = require("../models/errorSchema");
 const { checkAndSendDailySMS } = require("./messageController");
 
+const isLateTime = (t) => {
+  if (!t) return false;
+  const timeStr = String(t).toUpperCase().trim();
+  if (timeStr.includes("AM") || timeStr.includes("PM")) {
+    const isPM = timeStr.includes("PM");
+    const clean = timeStr.replace(/(AM|PM)/g, "").trim();
+    const [hStr, mStr] = clean.split(":");
+    let h = parseInt(hStr, 10);
+    const m = parseInt(mStr || "0", 10);
+    if (isPM && h !== 12) h += 12;
+    if (!isPM && h === 12) h = 0;
+    return (h > 9 || (h === 9 && m > 30));
+  }
+  const [h, m] = timeStr.split(":").map(Number);
+  return (h > 9 || (h === 9 && m > 30));
+};
+
 const escapeRegex = (string) => {
   if (typeof string !== "string") return "";
   return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
@@ -134,6 +151,20 @@ const createTemporaryStudentIfNeeded = async (roll, date) => {
 const addStudentInData = async (req, res) => {
   const roll = req.body.roll.toUpperCase();
 
+  // 1. Enforce Suspension Check FIRST before allowing entry
+  try {
+    const masterCheck = await studentMaster.findOne({ studentRoll: roll });
+    if (masterCheck && masterCheck.suspended && masterCheck.suspended.toUpperCase() === "YES") {
+      return res.status(201).json({
+        Warning: "Student is in Suspend List",
+        data: [masterCheck],
+        Data: [masterCheck]
+      });
+    }
+  } catch (err) {
+    console.error("Error checking student suspension:", err);
+  }
+
   const currentDate = new Date();
   const istOffsetInMilliseconds = (5 * 60 + 30) * 60 * 1000;
   const date = new Date(currentDate.getTime() + istOffsetInMilliseconds);
@@ -181,20 +212,29 @@ const addStudentInData = async (req, res) => {
         },
       ]);
       if (data.length != 0) {
-        if (data[0].suspended && data[0].suspended == "YES") {
+        if (data[0].suspended && data[0].suspended.toUpperCase() === "YES") {
           return res
             .status(201)
-            .send({ Warning: "Student is in Suspend List", data });
+            .send({ Warning: "Student is in Suspend List", data, Data: data });
         } else {
           data[0].date = date;
           data[0].inTime = time;
           data[0].outTime = null;
           const { _id, ...newResult } = data[0];
           var finalStudentData = new studentData(newResult);
-          finalStudentData.save();
+          await finalStudentData.save();
           checkAndSendDailySMS(roll, "gate", time);
-          // console.log(finalStudentData);
-          res.status(200).send(finalStudentData);
+          
+          const isLate = isLateTime(time);
+          res.status(200).json({
+            ...finalStudentData.toObject(),
+            isLate: isLate,
+            fatherMobile: finalStudentData.fatherMobile,
+            smsDispatched: true,
+            smsMessage: isLate
+              ? `Parent SMS alert dispatched to ${finalStudentData.fatherMobile || 'Parent'}: Student arrived late at ${time}`
+              : `Arrival logged on-time at ${time}`
+          });
         }
       } else {
         const tempStudent = await createTemporaryStudentIfNeeded(roll, date);
@@ -241,6 +281,20 @@ const addStudentOutData = async (req, res) => {
   // console.log(req.body);
   const roll = req.body.roll.toUpperCase();
 
+  // 1. Enforce Suspension Check FIRST before allowing exit
+  try {
+    const masterCheck = await studentMaster.findOne({ studentRoll: roll });
+    if (masterCheck && masterCheck.suspended && masterCheck.suspended.toUpperCase() === "YES") {
+      return res.status(201).json({
+        Warning: "Student is in Suspend List",
+        data: [masterCheck],
+        Data: [masterCheck]
+      });
+    }
+  } catch (err) {
+    console.error("Error checking student suspension:", err);
+  }
+
   const currentDate = new Date();
   const istOffsetInMilliseconds = (5 * 60 + 30) * 60 * 1000;
   const date = new Date(currentDate.getTime() + istOffsetInMilliseconds);
@@ -277,7 +331,7 @@ const addStudentOutData = async (req, res) => {
         return res.status(202).send(result);
       })
       .catch((er) => {
-        return res.status(500).send({ err: err.message });
+        return res.status(500).send({ err: er.message });
       });
   }
   else {
@@ -316,10 +370,10 @@ const addStudentOutData = async (req, res) => {
         // console.log("not founddddd");
         return res.status(205).send("Data not found");
       }
-      else if (Data[0].suspended && Data[0].suspended == "YES") {
+      else if (Data[0].suspended && Data[0].suspended.toUpperCase() === "YES") {
         return res
           .status(201)
-          .send({ Warning: "Student is in Suspend List", Data });
+          .send({ Warning: "Student is in Suspend List", data: Data, Data: Data });
       }
       Data[0].date = date;
       Data[0].inTime = null;

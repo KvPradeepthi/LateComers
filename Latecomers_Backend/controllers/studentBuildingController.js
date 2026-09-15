@@ -139,6 +139,20 @@ const addStudentBuildingInData = async (req, res) => {
     building = "School of Business";
   }
 
+  // 1. Enforce Suspension Check FIRST before allowing building entry
+  try {
+    const masterCheck = await studentMaster.findOne({ studentRoll: roll });
+    if (masterCheck && masterCheck.suspended && masterCheck.suspended.toUpperCase() === "YES") {
+      return res.status(201).json({
+        Warning: "Student is in Suspend List",
+        data: [masterCheck],
+        Data: [masterCheck]
+      });
+    }
+  } catch (err) {
+    console.error("Error checking student suspension:", err);
+  }
+
   const currentDate = new Date();
   const istOffsetInMilliseconds = (5 * 60 + 30) * 60 * 1000;
   const date = new Date(currentDate.getTime() + istOffsetInMilliseconds);
@@ -187,10 +201,10 @@ const addStudentBuildingInData = async (req, res) => {
         },
       ]);
       if (data.length != 0) {
-        if (data[0].suspended && data[0].suspended == "YES") {
+        if (data[0].suspended && data[0].suspended.toUpperCase() === "YES") {
           return res
             .status(201)
-            .send({ Warning: "Student is in Suspend List", data });
+            .send({ Warning: "Student is in Suspend List", data, Data: data });
         } else {
           data[0].date = date;
           data[0].inTime = time;

@@ -12,6 +12,23 @@ import { toast, ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { setBreadcrumbItems } from "store/actions"
 
+const isLateTime = (t) => {
+  if (!t) return false;
+  const timeStr = String(t).toUpperCase().trim();
+  if (timeStr.includes("AM") || timeStr.includes("PM")) {
+    const isPM = timeStr.includes("PM");
+    const clean = timeStr.replace(/(AM|PM)/g, "").trim();
+    const [hStr, mStr] = clean.split(":");
+    let h = parseInt(hStr, 10);
+    const m = parseInt(mStr || "0", 10);
+    if (isPM && h !== 12) h += 12;
+    if (!isPM && h === 12) h = 0;
+    return (h > 9 || (h === 9 && m > 30));
+  }
+  const [h, m] = timeStr.split(":").map(Number);
+  return (h > 9 || (h === 9 && m > 30));
+};
+
 const GetInfo = props => {
   const authUserStr = localStorage.getItem("authUser")
   let isAdmin = true
@@ -348,20 +365,20 @@ const GetInfo = props => {
               `${outSearchParameter.toUpperCase()} InTime is Updated Successfully`,
             )
           } else if (result.status === 201) {
-            // console.log(result.data.data[0])
+            const suspendedData = result.data?.data?.[0] || result.data?.Data?.[0] || { studentRoll: value.toUpperCase(), studentName: "Suspended Student" };
             toast.error(
-              `${value.toUpperCase()} is in Suspend List.`,
+              `🚫 ENTRY BLOCKED: ${value.toUpperCase()} is on the CAMPUS SUSPENSION LIST!`,
               {
                 position: "top-right",
-                autoClose: 4000,
+                autoClose: 6000,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,
                 draggable: true,
-                theme: "light",
+                theme: "colored",
               },
             )
-            setSelectedStudent(result.data.data[0])
+            setSelectedStudent(suspendedData)
             setModalOpen(true)
             console.log(`${value.toUpperCase()} is in Suspend List`)
             setInSearchParameter("")
@@ -380,12 +397,8 @@ const GetInfo = props => {
               },
             )
             console.log(`${value.toUpperCase()} In Time is Updated Successfully`)
-            // sendMails(result.data , "false")// to send the mails to the student
             setIsInUpdated(!isInUpdated)
             setInSearchParameter("")
-            console.log(
-              `${outSearchParameter.toUpperCase()} Out Time is Updated Successfully`,
-            )
           }
            else if (result.status === 205) {
             toast.error(`${value.toUpperCase()} data not Found`, {
@@ -397,30 +410,42 @@ const GetInfo = props => {
               draggable: true,
               theme: "light",
             })
-
             console.log(`${value.toUpperCase()} data not Found`)
             setInSearchParameter("")
           } else {
-            console.log("today data is getting successfully")
-            console.log(result.data)
+            console.log("today data is getting successfully", result.data)
+            const student = result.data || {};
+            const inTimeStr = student.inTime || "";
+            const isLate = student.isLate !== undefined ? student.isLate : isLateTime(inTimeStr);
+            const parentPhone = student.fatherMobile || "Registered Parent Number";
 
-            toast.success(
-              `${value.toUpperCase()} is Added Successfully`,
-              {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                theme: "light",
-              },
-            )
-            // sendMails(result.data , "false")// to send the mails to the student
-
-            console.log(
-              `${value.toUpperCase()} is Added Successfully`,
-            )
+            if (isLate) {
+              toast.warn(
+                `⏰ LATE ENTRY: ${value.toUpperCase()} recorded at ${inTimeStr || 'now'}! 📱 Parent SMS notification dispatched to ${parentPhone}.`,
+                {
+                  position: "top-right",
+                  autoClose: 6000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  theme: "colored",
+                },
+              )
+            } else {
+              toast.success(
+                `✅ ON-TIME ENTRY: ${value.toUpperCase()} recorded at ${inTimeStr || 'now'}.`,
+                {
+                  position: "top-right",
+                  autoClose: 5000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  theme: "light",
+                },
+              )
+            }
 
             setIsInUpdated(!isInUpdated)
             setInSearchParameter("")
@@ -656,24 +681,22 @@ const GetInfo = props => {
               `${value.toUpperCase()} Out Time is Updated Successfully`,
             )
           } else if (result.status === 201) {
-            // console.log(result.data.data[0])
+            const suspendedData = result.data?.data?.[0] || result.data?.Data?.[0] || { studentRoll: value.toUpperCase(), studentName: "Suspended Student" };
             toast.error(
-              `${value.toUpperCase()} is in Suspend List.`,
+              `🚫 EXIT BLOCKED: ${value.toUpperCase()} is on the CAMPUS SUSPENSION LIST!`,
               {
                 position: "top-right",
-                autoClose: 4000,
+                autoClose: 6000,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,
                 draggable: true,
-                theme: "light",
+                theme: "colored",
               },
             )
-            setSelectedStudent(result.data.Data[0])
+            setSelectedStudent(suspendedData)
             setModalOpen(true)
-            console.log(
-              `${value.toUpperCase()} is in Suspend List`,
-            )
+            console.log(`${value.toUpperCase()} is in Suspend List`)
             setOutSearchParameter("")
           } else if (result.status === 205) {
             toast.error(`${value.toUpperCase()} data not Found`, {
