@@ -1,20 +1,63 @@
 # Campus Attendance & Visitor Management System (LateComers)
 
-A full-stack **MERN (MongoDB, Express, React, Node.js)** web application designed for comprehensive campus attendance tracking, digital gate checkpoints, building-level verification, and visitor pass administration.
+A full-stack **MERN (MongoDB, Express, React, Node.js)** web application developed for real-world campus operations, including comprehensive attendance tracking, digital gate checkpoints, building-level verification, visitor pass administration, reporting, and campus monitoring.
 
-> **Portfolio Demo Notice:**  
-> This repository contains a **sanitized public portfolio demonstration** of a real-world campus attendance system deployed across collegiate checkpoints. All institutional infrastructure addresses, private keys, and student records have been replaced with **fictional datasets and demo-safe integrations**.
+The system was developed and deployed for **actual college use**, where it is currently used as a live campus management system across institutional checkpoints.
 
----
-
-## 🎯 Live Recruiter Demo
-
-* **Public Web App**: [https://latecomers-frontend.onrender.com](https://latecomers-frontend.onrender.com)
-* **Demo Account**: `demo@demo.edu`
-* **Password**: `demo1234`
-* **One-Click Access**: The login screen features an **`[ Enter Demo ]`** button for immediate, single-click access with pre-filled credentials.
+> **Important:**  
+> This GitHub repository is a **sanitized public portfolio version** of the real college-deployed system.  
+> The institutional deployment contains real operational data and infrastructure and is therefore not publicly disclosed. This repository replaces institutional addresses, private credentials, student records, and external integrations with fictional datasets and demo-safe configurations.
 
 ---
+
+## 🎯 Live Deployment & Recruiter Demo
+
+### 🏫 Real College Deployment
+
+The complete system is **currently deployed and actively running on a college-hosted domain** for institutional use.
+
+This is the **actual institutional deployment**, separate from the public GitHub repository and the public recruiter demo.
+
+The institutional deployment supports real campus operations including:
+
+- Student gate attendance tracking
+- Academic building check-ins
+- Latecomer identification
+- Visitor management
+- Faculty attendance tracking
+- Student and faculty analytics
+- Examination schedule monitoring
+- Attendance and latecomer reports
+- Administrative monitoring
+
+> 🔒 **Institutional domain:** Not publicly disclosed because it is a private college system containing operational data and institution-specific infrastructure.
+
+The public GitHub repository is a **sanitized portfolio representation** of this deployed system and is maintained separately from the confidential institutional environment.
+
+### 🌐 Public Portfolio Demo
+
+A sanitized version of the application is also deployed publicly on Render for recruiter and portfolio demonstration.
+
+**Public Web App:**  
+https://latecomers-frontend.onrender.com
+
+**Demo Account:**
+
+- **Email:** `demo@demo.edu`
+- **Password:** `demo1234`
+
+The login screen also provides an **`[ Enter Demo ]`** button for immediate access using pre-filled credentials.
+
+### Deployment Separation
+
+| Environment | Purpose | Status |
+|---|---|---|
+| **College-hosted deployment** | Actual institutional operations | **Live & actively used** |
+| **Public Render deployment** | Sanitized recruiter/portfolio demonstration | **Live** |
+| **GitHub repository** | Sanitized source code for public review | **Public** |
+
+The public deployment does **not** expose the college's real domain, infrastructure, credentials, or student information.
+
 
 ## 🏗️ System Architecture
 
