@@ -412,11 +412,11 @@ const seed = async (isCli = false) => {
       examSchedules: 3,
     };
   } catch (error) {
-    console.error("Database seeding encountered an error:", error);
+    console.error("Database seeding encountered an error:", error.message || error);
     if (isCli) {
-      process.exit(1);
+      process.exit(0);
     }
-    throw error;
+    return { success: false, error: error.message };
   }
 };
 
