@@ -19,6 +19,8 @@ import Flatpickr from "react-flatpickr";
 import moment from "moment";
 import { concat, min } from "lodash";
 import PreviewModal from "./previewModel";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function NewVisitors(props) {
   const baseUrl = process.env.REACT_APP_API;
@@ -190,6 +192,35 @@ function NewVisitors(props) {
 
   const togglePreviewModal = () => {
     setIsPreviewOpen((prevState) => !prevState);
+  };
+
+  const handleSubmitDirect = () => {
+    const currentTime = new Date().toLocaleTimeString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+    const Data = {
+      ...FormData,
+      inTime: currentTime,
+      passNumber: "VISITOR" + GetPass,
+    };
+    axios
+      .post(baseUrl + "/add-Visitor", Data)
+      .then((result) => {
+        toast.success("Visitor Added Successfully! Check Visitors List to view pass.", {
+          position: "top-right",
+          autoClose: 4000
+        });
+        setIsUpdated(!isUpdated);
+        handleReset();
+      })
+      .catch((err) => {
+        toast.error("Failed to add visitor. Please check all required fields.", {
+          position: "top-right",
+          autoClose: 4000
+        });
+      });
   };
 
   const printDetails = () => {
@@ -740,14 +771,22 @@ function NewVisitors(props) {
                       width: "40%",
                       minWidth: "250px",
                     }}
-                  >
+                    <Button
+                      color="primary"
+                      className="ms-1"
+                      onClick={handleSubmitDirect}
+                      disabled={!isFormValid}
+                    >
+                      Save Visitor
+                    </Button>
+
                     <Button
                       color="success"
                       className="ms-1"
                       onClick={handlePreview}
                       disabled={!isFormValid}
                     >
-                      Preview
+                      Preview & Print
                     </Button>
 
                     <PreviewModal
@@ -765,6 +804,7 @@ function NewVisitors(props) {
                       Cancel
                     </Button>
                   </div>
+                  <ToastContainer />
                 </FormGroup>
               </Col>
             </Row>
