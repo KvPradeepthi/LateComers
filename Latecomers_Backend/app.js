@@ -48,17 +48,25 @@ var examScheduleRouter = require('./routes/examScheduleRouter');
 var aiQueryRouter = require('./routes/aiQueryRoute');
 
 
-app.use('/api' , visitorRouter);
-app.use('/api' , studentRouter);
-app.use('/api' , studentBuildingRouter);
-app.use('/api' , facultyRouter)
-app.use('/api', studentMasterRouter)
-app.use('/api', dashboardRouter)
-app.use('/api' , facultyDataBaseRouter)
-app.use('/api', messageRouter);
-app.use('/api', loginRouter);
-app.use('/api', examScheduleRouter);
-app.use('/api', aiQueryRouter);
+// Mount routers at both /api and / to support any REACT_APP_API configuration
+const routers = [
+  visitorRouter,
+  studentRouter,
+  studentBuildingRouter,
+  facultyRouter,
+  studentMasterRouter,
+  dashboardRouter,
+  facultyDataBaseRouter,
+  messageRouter,
+  loginRouter,
+  examScheduleRouter,
+  aiQueryRouter,
+];
+
+routers.forEach((r) => {
+  app.use('/api', r);
+  app.use('/', r);
+});
 
 const { seed } = require("./seed");
 app.all('/api/reset-demo-data', async (req, res) => {
