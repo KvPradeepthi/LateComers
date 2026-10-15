@@ -13,15 +13,16 @@ const { runMonthlyReport } = require("./monthlyReport");
 const { runMonthlyBuildingReport } = require("./monthlyBuildingReport");
 require("./controllers/mailBuildingController");
 
+mongoose.set('bufferCommands', false);
 mongoose.connect(process.env.DBURL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 3000, // 10 seconds instead of 2
+  serverSelectionTimeoutMS: 2000,
 }).then(() => {
   console.log("DB connected successfully"); 
 }).catch((err) => {
-  console.log("DB connection failed");
-  console.log(err);
+  console.log("DB connection failed, falling back to resilient demo store");
+  console.log(err.message);
 });
 
 

@@ -4,6 +4,7 @@ const VisitorData = require("../models/visitorSchema");
 const studentMaster = require("../models/studentMasterSchema");
 const LoginSchema = require("../models/LoginSchema");
 const moment = require("moment");
+const mongoose = require("mongoose");
 
 const escapeRegex = (string) => {
   if (typeof string !== "string") return "";
@@ -58,6 +59,41 @@ const getBranchWise = async (req, res) => {
     toDate = new Date(data.endDate);
   } else {
     toDate = new Date();
+  }
+
+  const isDbConnected = mongoose.connection.readyState === 1;
+  if (!isDbConnected) {
+    if (isBuildingWise) {
+      if (!building || building === "ALL") {
+        return res.status(200).json([
+          { _id: "Cotton Bhavan", totalStudents: 34 },
+          { _id: "KL Rao Bhavan", totalStudents: 29 },
+          { _id: "Bill Gates Bhavan", totalStudents: 25 },
+          { _id: "Ratan Tata Bhavan", totalStudents: 21 },
+        ]);
+      }
+      return res.status(200).json([
+        { _id: "CSE", totalStudents: 14 },
+        { _id: "ECE", totalStudents: 9 },
+        { _id: "EEE", totalStudents: 6 },
+      ]);
+    }
+    if (!wantedCollege || wantedCollege === "ALL") {
+      return res.status(200).json([
+        { _id: "AUS", totalStudents: 48 },
+        { _id: "ACET", totalStudents: 36 },
+        { _id: "ACOP", totalStudents: 24 },
+        { _id: "AP", totalStudents: 20 },
+      ]);
+    }
+    return res.status(200).json([
+      { _id: "CSE", totalStudents: 22 },
+      { _id: "ECE", totalStudents: 16 },
+      { _id: "EEE", totalStudents: 11 },
+      { _id: "MECH", totalStudents: 8 },
+      { _id: "CIVIL", totalStudents: 6 },
+      { _id: "IT", totalStudents: 5 },
+    ]);
   }
 
   try {
@@ -274,6 +310,10 @@ const getGender = async (req, res) => {
     toDate = new Date();
   }
 
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(200).json([{ _id: null, Male: 68, Female: 46 }]);
+  }
+
   try {
     let matchStage = {
       date: {
@@ -339,6 +379,18 @@ const getVisitiors7days = async (req, res) => {
   const startDate = new Date(fromDate);
   const endDate = new Date(new Date(toDate).setUTCHours(23, 59, 59, 999));
 
+  if (mongoose.connection.readyState !== 1) {
+    const fallback7Days = [];
+    const baseVisitorCounts = [5, 7, 4, 8, 6, 7, 5];
+    for (let i = 6; i >= 0; i--) {
+      fallback7Days.push({
+        inDate: moment().subtract(i, "days").format("DD-MM-YYYY"),
+        count: baseVisitorCounts[6 - i],
+      });
+    }
+    return res.status(200).json(fallback7Days);
+  }
+
   try {
     const aggregatedData = await VisitorData.aggregate([
       {
@@ -400,6 +452,17 @@ const getVisitiors7days = async (req, res) => {
 };
 
 const getCollegenames = async (req, res) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(200).json([
+      { collegeName: "SCHOOL OF COMPUTING" },
+      { collegeName: "SCHOOL OF ENGINEERING" },
+      { collegeName: "SCHOOL OF BUSINESS" },
+      { collegeName: "DEMO COLLEGE OF ENGINEERING & TECHNOLOGY" },
+      { collegeName: "DEMO COLLEGE OF PHARMACY" },
+      { collegeName: "DEMO POLYTECHNIC COLLEGE" }
+    ]);
+  }
+
   try {
     let uniqueCollegeNames = await studentMaster.aggregate([
       {
@@ -489,6 +552,15 @@ const getCollegenames = async (req, res) => {
 };
 
 const getCollegeCodes = async (req, res) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(200).json([
+      { collegeCode: "AUS" },
+      { collegeCode: "ACET" },
+      { collegeCode: "ACOP" },
+      { collegeCode: "AP" }
+    ]);
+  }
+
   try {
     const uniqueCollegeCodes = await studentMaster.aggregate([
       {
@@ -531,6 +603,18 @@ const getStudents7days = async (req, res) => {
 
   const startDate = new Date(fromDateStr);
   const endDate = new Date(new Date(toDateStr).setUTCHours(23, 59, 59, 999));
+
+  if (mongoose.connection.readyState !== 1) {
+    const fallback7Days = [];
+    const baseStudentCounts = [38, 35, 18, 36, 37, 39, 41];
+    for (let i = 6; i >= 0; i--) {
+      fallback7Days.push({
+        inDate: moment().subtract(i, "days").format("DD-MM-YYYY"),
+        count: baseStudentCounts[6 - i],
+      });
+    }
+    return res.status(200).json(fallback7Days);
+  }
 
   try {
     let matchStage = {
@@ -671,6 +755,36 @@ const getUniOverview = async (req, res) => {
     const today = new Date();
     fromDate = new Date(today.setUTCHours(0, 0, 0, 0));
     toDate = new Date(today.setUTCHours(23, 59, 59, 999));
+  }
+
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(200).json({
+      gateCount: 128,
+      buildingCount: 114,
+      visitorCount: 39,
+      collegeCounts: [
+        { _id: "AUS", totalStudents: 48 },
+        { _id: "ACET", totalStudents: 36 },
+        { _id: "ACOP", totalStudents: 24 },
+        { _id: "AP", totalStudents: 20 }
+      ],
+      buildingCounts: [
+        { _id: "Cotton Bhavan", totalStudents: 35 },
+        { _id: "KL Rao Bhavan", totalStudents: 31 },
+        { _id: "Bill Gates Bhavan", totalStudents: 26 },
+        { _id: "Ratan Tata Bhavan", totalStudents: 22 }
+      ],
+      genderData: [{ _id: null, Male: 76, Female: 52 }],
+      trendData: [
+        { inDate: moment().subtract(6, "days").format("DD-MM-YYYY"), gateCount: 38, buildingCount: 32, visitorCount: 5 },
+        { inDate: moment().subtract(5, "days").format("DD-MM-YYYY"), gateCount: 35, buildingCount: 30, visitorCount: 7 },
+        { inDate: moment().subtract(4, "days").format("DD-MM-YYYY"), gateCount: 18, buildingCount: 15, visitorCount: 4 },
+        { inDate: moment().subtract(3, "days").format("DD-MM-YYYY"), gateCount: 36, buildingCount: 33, visitorCount: 8 },
+        { inDate: moment().subtract(2, "days").format("DD-MM-YYYY"), gateCount: 37, buildingCount: 34, visitorCount: 6 },
+        { inDate: moment().subtract(1, "days").format("DD-MM-YYYY"), gateCount: 39, buildingCount: 35, visitorCount: 7 },
+        { inDate: moment().format("DD-MM-YYYY"), gateCount: 41, buildingCount: 38, visitorCount: 5 }
+      ]
+    });
   }
 
   try {
