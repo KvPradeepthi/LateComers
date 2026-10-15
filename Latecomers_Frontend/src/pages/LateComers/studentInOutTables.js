@@ -19,6 +19,9 @@ const isLateTime = (t) => {
 };
 
 function StudentInOutTables({studentInData , studentOutData, showOutTable = true}) {
+  const safeInData = Array.isArray(studentInData) ? [...studentInData] : [];
+  const safeOutData = Array.isArray(studentOutData) ? [...studentOutData] : [];
+
   const inData = {
     columns: [
       { label: "Student Roll", field: "studentRoll", width: 140 },
@@ -27,7 +30,9 @@ function StudentInOutTables({studentInData , studentOutData, showOutTable = true
       { label: "Time_In", field: "inTime", width: 120 },
       { label: "Status", field: "statusBadge", width: 160 },
     ],
-    rows: studentInData && studentInData.sort((a, b) => b.inTime.localeCompare(a.inTime)).map(student => ({
+    rows: safeInData
+      .sort((a, b) => String(b.inTime || "").localeCompare(String(a.inTime || "")))
+      .map(student => ({
         ...student,
         statusBadge: isLateTime(student.inTime) ? (
           <span className="badge bg-danger text-white font-size-12 px-2 py-1">
@@ -48,7 +53,9 @@ function StudentInOutTables({studentInData , studentOutData, showOutTable = true
       { label: "Gender", field: "gender", width: 100 },
       { label: "Time_Out", field: "outTime", width: 150 },
     ],
-    rows: studentOutData && studentOutData.sort((a, b) => b.outTime.localeCompare(a.outTime)).map(student => ({
+    rows: safeOutData
+      .sort((a, b) => String(b.outTime || "").localeCompare(String(a.outTime || "")))
+      .map(student => ({
         ...student
       })),
   };
