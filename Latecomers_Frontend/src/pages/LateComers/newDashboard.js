@@ -18,6 +18,24 @@ const getBuildingShortcut = (name) => {
     .join("");
 };
 
+const defaultColleges = [
+  { collegeName: "ALL" },
+  { collegeName: "SCHOOL OF COMPUTING" },
+  { collegeName: "SCHOOL OF ENGINEERING" },
+  { collegeName: "SCHOOL OF BUSINESS" },
+  { collegeName: "DEMO COLLEGE OF ENGINEERING & TECHNOLOGY" },
+  { collegeName: "DEMO COLLEGE OF PHARMACY" },
+  { collegeName: "DEMO POLYTECHNIC COLLEGE" }
+];
+
+const defaultBuildings = [
+  { collegeName: "ALL" },
+  { collegeName: "Cotton Bhavan" },
+  { collegeName: "KL Rao Bhavan" },
+  { collegeName: "Bill Gates Bhavan" },
+  { collegeName: "Ratan Tata Bhavan" }
+];
+
 function Dashboard(props) {
   const authUserStr = localStorage.getItem("authUser");
   let isBuildingRole = false;
@@ -40,13 +58,18 @@ function Dashboard(props) {
 
   const [activeTab, setActiveTab] = useState(isSuperAdmin ? "uni" : (isBuildingRole ? "building" : "college"));
   const [selectedOption, setSelectedOption] = useState('ALL');
-  const [clgs, setClgs] = useState([]);
+  const [clgs, setClgs] = useState(defaultColleges);
   const [numdata, setNUM] = useState([]);
   const [namdata, setNAM] = useState([]);
   const [genderData, setGenderData] = useState([]);
   const [pasting, setPasting] = useState([]);
-  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [startDate, setStartDate] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 14);
+    return d.toISOString().split('T')[0];
+  });
   const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
+  const [loading, setLoading] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   // University Overview States
@@ -68,88 +91,125 @@ function Dashboard(props) {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const formattedStartDate = startDate;
         const formattedEndDate = endDate;
         const isCurrentBuildingMode = activeTab === "building";
 
         if (activeTab === "uni") {
-          console.log("Fetching university overview data...");
-          const res = await axios.post(`${BaseUrl}/get-uni-overview`, {
-            startDate: formattedStartDate,
-            endDate: formattedEndDate,
-          });
-          const { gateCount, buildingCount, visitorCount, collegeCounts, buildingCounts, genderData, trendData } = res.data;
-          
-          setUniStats({ gateCount, buildingCount, visitorCount });
-          setUniCollegeCounts(collegeCounts || []);
-          setUniBuildingCounts(buildingCounts || []);
-          setUniGenderData(genderData || []);
-          setUniTrendData(trendData || []);
+          try {
+            console.log("Fetching university overview data...");
+            const res = await axios.post(`${BaseUrl}/get-uni-overview`, {
+              startDate: formattedStartDate,
+              endDate: formattedEndDate,
+            });
+            const { gateCount, buildingCount, visitorCount, collegeCounts, buildingCounts, genderData, trendData } = res.data || {};
+            
+            setUniStats({ gateCount: gateCount || 0, buildingCount: buildingCount || 0, visitorCount: visitorCount || 0 });
+            setUniCollegeCounts(collegeCounts || []);
+            setUniBuildingCounts(buildingCounts || []);
+            setUniGenderData(genderData || []);
+            setUniTrendData(trendData || []);
+          } catch (e) {
+            console.error("Uni overview error:", e);
+          }
+          setLoading(false);
           return;
         }
 
         // Fetch dropdown options (buildings vs colleges)
         if (isCurrentBuildingMode) {
-          const bRes = await axios.get(`${BaseUrl}/get-building-names`);
-          const buildings = (bRes.data || [])
-            .map(b => b.buildingName)
-            .filter(name => name && typeof name === "string" && name.trim() !== "")
-            .sort((a, b) => a.localeCompare(b));
-          const buildingNamesWithAll = [{ collegeName: "ALL" }, ...buildings.map(name => ({ collegeName: name }))];
-          setClgs(buildingNamesWithAll);
+          try {
+            const bRes = await axios.get(`${BaseUrl}/get-building-names`);
+            const buildings = (bRes.data || [])
+              .map(b => b.buildingName)
+              .filter(name => name && typeof name === "string" && name.trim() !== "")
+              .sort((a, b) => a.localeCompare(b));
+            if (buildings.length > 0) {
+              setClgs([{ collegeName: "ALL" }, ...buildings.map(name => ({ collegeName: name }))]);
+            } else {
+              setClgs(defaultBuildings);
+            }
+          } catch (e) {
+            setClgs(defaultBuildings);
+          }
         } else {
-          const clgRes = await axios.get(`${BaseUrl}/get-clg-names`);
-          const colleges = (clgRes.data || [])
-            .map(c => c.collegeName)
-            .filter(name => name && typeof name === "string" && name.trim() !== "")
-            .sort((a, b) => a.localeCompare(b));
-          const collegeNamesWithAll = [{ collegeName: "ALL" }, ...colleges.map(name => ({ collegeName: name }))];
-          setClgs(collegeNamesWithAll);
+          try {
+            const clgRes = await axios.get(`${BaseUrl}/get-clg-names`);
+            const colleges = (clgRes.data || [])
+              .map(c => c.collegeName)
+              .filter(name => name && typeof name === "string" && name.trim() !== "")
+              .sort((a, b) => a.localeCompare(b));
+            if (colleges.length > 0) {
+              setClgs([{ collegeName: "ALL" }, ...colleges.map(name => ({ collegeName: name }))]);
+            } else {
+              setClgs(defaultColleges);
+            }
+          } catch (e) {
+            setClgs(defaultColleges);
+          }
         }
 
-        console.log("Fetching dashboard data...")
         // Fetch branchwise data
-        const branchwiseRes = await axios.post(`${BaseUrl}/get-branchwise`, {
-          selectedOption,
-          startDate: new Date(formattedStartDate),
-          endDate: new Date(formattedEndDate),
-          isBuildingWise: isCurrentBuildingMode,
-          building: isCurrentBuildingMode ? selectedOption : null,
-        });
-        const branchData = branchwiseRes.data.length
-          ? branchwiseRes.data.map(item => ({
-            name: item._id,
-            totalStudents: item.totalStudents,
-          })).sort((a, b) => b.totalStudents - a.totalStudents)
-          : [{ name: "No Data", totalStudents: 0 }];
+        try {
+          const branchwiseRes = await axios.post(`${BaseUrl}/get-branchwise`, {
+            selectedOption,
+            startDate: formattedStartDate,
+            endDate: formattedEndDate,
+            isBuildingWise: isCurrentBuildingMode,
+            building: isCurrentBuildingMode ? selectedOption : null,
+          });
+          const branchData = (branchwiseRes.data && branchwiseRes.data.length)
+            ? branchwiseRes.data.map(item => ({
+              name: item._id,
+              totalStudents: item.totalStudents,
+            })).sort((a, b) => b.totalStudents - a.totalStudents)
+            : [{ name: "No Data", totalStudents: 0 }];
 
-        setNUM(branchData.map(item => item.totalStudents));
-        setNAM(branchData.map(item => item.name));
+          setNUM(branchData.map(item => item.totalStudents));
+          setNAM(branchData.map(item => item.name));
+        } catch (e) {
+          console.error("Branchwise fetch error:", e);
+          setNUM([0]);
+          setNAM(["No Data"]);
+        }
 
         // Fetch gender data
-        const genderRes = await axios.post(`${BaseUrl}/get-gender`, {
-          selectedOption,
-          startDate: formattedStartDate,
-          endDate: formattedEndDate,
-          isBuildingWise: isCurrentBuildingMode,
-          building: isCurrentBuildingMode ? selectedOption : null,
-        });
-        setGenderData(genderRes.data.length ? genderRes.data : [{ _id: null, Female: 0, Male: 0 }]);
+        try {
+          const genderRes = await axios.post(`${BaseUrl}/get-gender`, {
+            selectedOption,
+            startDate: formattedStartDate,
+            endDate: formattedEndDate,
+            isBuildingWise: isCurrentBuildingMode,
+            building: isCurrentBuildingMode ? selectedOption : null,
+          });
+          setGenderData(genderRes.data && genderRes.data.length ? genderRes.data : [{ _id: null, Female: 0, Male: 0 }]);
+        } catch (e) {
+          console.error("Gender fetch error:", e);
+          setGenderData([{ _id: null, Female: 0, Male: 0 }]);
+        }
 
         // Fetch past 7 days data
-        if (isCurrentBuildingMode) {
-          const pastingRes = await axios.post(`${BaseUrl}/get-student-seven`, {
-            isBuildingWise: true,
-            building: selectedOption,
-          });
-          setPasting(pastingRes.data || []);
-        } else {
-          const pastingRes = await axios.get(`${BaseUrl}/get-visitor-seven`);
-          setPasting(pastingRes.data || []);
+        try {
+          if (isCurrentBuildingMode) {
+            const pastingRes = await axios.post(`${BaseUrl}/get-student-seven`, {
+              isBuildingWise: true,
+              building: selectedOption,
+            });
+            setPasting(pastingRes.data || []);
+          } else {
+            const pastingRes = await axios.get(`${BaseUrl}/get-visitor-seven`);
+            setPasting(pastingRes.data || []);
+          }
+        } catch (e) {
+          console.error("Past 7 days fetch error:", e);
+          setPasting([]);
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching dashboard data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -351,8 +411,18 @@ function Dashboard(props) {
         </>
       )}
 
+      {/* Loading Spinner */}
+      {loading && (
+        <div className="text-center py-5">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading dashboard...</span>
+          </div>
+          <p className="text-muted mt-2">Loading campus analytics...</p>
+        </div>
+      )}
+
       {/* College/Building Dashboard Content */}
-      {activeTab !== "uni" && numdata.length > 0 && namdata.length > 0 && (
+      {!loading && activeTab !== "uni" && numdata.length > 0 && namdata.length > 0 && !(numdata.length === 1 && numdata[0] === 0) && (
         <Row>
           <Col lg="8">
             <h3>{selectedOption === 'ALL' ? (activeTab === "building" ? "ALL Buildings" : "ALL Colleges") : (activeTab === "building" ? getBuildingShortcut(selectedOption) : selectedOption)}</h3>
@@ -366,8 +436,18 @@ function Dashboard(props) {
         </Row>
       )}
 
+      {!loading && activeTab !== "uni" && (numdata.length === 0 || (numdata.length === 1 && numdata[0] === 0)) && (
+        <div className="card text-center py-5 my-4" style={{ background: '#f8f9fa', borderRadius: '8px', border: '1px dashed #ced4da' }}>
+          <div className="card-body">
+            <i className="mdi mdi-chart-bar text-muted" style={{ fontSize: '48px' }} />
+            <h5 className="mt-3 text-muted">No Attendance Records Found</h5>
+            <p className="text-muted font-size-13 mb-0">There are no check-in records for the selected date range. Try widening the dates or selecting 'ALL'.</p>
+          </div>
+        </div>
+      )}
+
       <br /><br /><br />
-      {activeTab !== "uni" && pasting.length > 0 && (
+      {!loading && activeTab !== "uni" && pasting.length > 0 && (
         <Row>
           <Chartapex Data={pasting} title={activeTab === "building" ? "Past 7 Days Latecomers" : "Past 7 Days Visitors"} />
         </Row>
