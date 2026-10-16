@@ -957,10 +957,22 @@ const getDemoReportData = (clg, dept) => {
     { studentRoll: "22A91A0535", studentName: "KARTHIK RAJA", college: "Aditya Polytechnic College", branch: "EEE", gender: "MALE", inTime: "10:15 AM", Count: 5, date: [new Date()] },
     { studentRoll: "22A91A0540", studentName: "MEERA NANDAN", college: "Aditya Engineering College", branch: "Civil", gender: "FEMALE", inTime: "09:45 AM", Count: 2, date: [new Date()] }
   ];
+  let filtered = sampleStudents;
+  if (clg && clg !== "ALL COLLEGES" && clg !== "ALL") {
+    filtered = filtered.filter(s => {
+      const sClg = (s.college || "").toLowerCase();
+      const targetClg = clg.toLowerCase();
+      return sClg === targetClg || sClg.includes(targetClg) || targetClg.includes(sClg);
+    });
+  }
+  if (dept && dept !== "ALL BRANCHES" && dept !== "ALL") {
+    filtered = filtered.filter(s => (s.branch || "").toLowerCase() === dept.toLowerCase());
+  }
+
   return {
-    tableDate: sampleStudents,
-    tableData: sampleStudents,
-    excelData: sampleStudents
+    tableDate: filtered,
+    tableData: filtered,
+    excelData: filtered
   };
 };
 

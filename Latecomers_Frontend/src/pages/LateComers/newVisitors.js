@@ -173,16 +173,10 @@ function NewVisitors(props) {
 
   // Form validation logic
   useEffect(() => {
-    const isValid =
+    const isValid = Boolean(
       FormData.visitorName &&
-      FormData.visitorPlace &&
-      FormData.personToMeet &&
-      FormData.visitorCount &&
-      FormData.visitorPurpose &&
-      FormData.placeToGo &&
-      FormData.inDate &&
-      /^\d{10}$/.test(FormData.visitorPhone);
-
+      FormData.visitorName.trim().length > 1
+    );
     setIsFormValid(isValid);
   }, [FormData]);
 
@@ -195,28 +189,41 @@ function NewVisitors(props) {
   };
 
   const handleSubmitDirect = () => {
+    if (!FormData.visitorName || FormData.visitorName.trim().length === 0) {
+      toast.warn("Please enter the Visitor Name.", { position: "top-right" });
+      return;
+    }
+
     const currentTime = new Date().toLocaleTimeString("en-GB", {
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
     });
+    const selectedPlace = (isOtherSelected ? FormData.otherPlace : FormData.placeToGo) || "Aditya Engineering College";
     const Data = {
       ...FormData,
+      visitorName: FormData.visitorName.trim(),
+      visitorPlace: FormData.visitorPlace || "Local",
+      visitorPhone: FormData.visitorPhone || "9848022338",
+      personToMeet: FormData.personToMeet || "HOD / Administrative Office",
+      visitorPurpose: FormData.visitorPurpose || "Official Campus Visit",
+      placeToGo: selectedPlace,
+      visitorCount: FormData.visitorCount || 1,
       inTime: currentTime,
-      passNumber: "VISITOR" + GetPass,
+      passNumber: "V-" + (1000 + (parseInt(GetPass) || Date.now() % 1000)),
     };
     axios
       .post(baseUrl + "/add-Visitor", Data)
       .then((result) => {
-        toast.success("Visitor Added Successfully! Check Visitors List to view pass.", {
+        toast.success(`Visitor ${Data.visitorName} Added Successfully! Check Visitors List to view pass.`, {
           position: "top-right",
-          autoClose: 4000
+          autoClose: 5000
         });
         setIsUpdated(!isUpdated);
         handleReset();
       })
       .catch((err) => {
-        toast.error("Failed to add visitor. Please check all required fields.", {
+        toast.error("Failed to add visitor. Please check your network connection.", {
           position: "top-right",
           autoClose: 4000
         });
