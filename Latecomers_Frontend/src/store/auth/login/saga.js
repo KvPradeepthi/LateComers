@@ -15,7 +15,7 @@ import axios from "axios";
 const fireBaseBackend = getFirebaseBackend();
 
 function* loginUser({ payload: { user, history } }) {
-  const base_url = process.env.REACT_APP_API;
+  const base_url = process.env.REACT_APP_API || "http://localhost:5000/api";
 
   try {
     const response = yield call(axios.post, `${base_url}/get-admin-login`, user);

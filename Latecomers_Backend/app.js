@@ -170,7 +170,7 @@ console.log("⏰ Cron job scheduled: Last day of every month at 10:30 AM IST");
 // console.log("⏰ Cron job scheduled: 13th of every month at 11:03 IST");
 
 
-const port = process.env.PORT;
+const port = process.env.PORT || 5000;
 app.listen(port , function(){
   console.log('Server is Running at  '+'http://localhost:'+ port);
 })
