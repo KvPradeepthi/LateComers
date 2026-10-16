@@ -13,9 +13,12 @@ const Visitor = require("./models/visitorSchema");
 const ExamSchedule = require("./models/examSchedule");
 const ErrorLog = require("./models/errorSchema");
 
-const dbUrl = process.env.DBURL || "mongodb+srv://myAtlasDBUser:Omnamahshivaya@myatlasclusteredu.ispuduj.mongodb.net/latecomers?retryWrites=true&w=majority";
+const dbUrl = process.env.DBURL;
 
 const ensureDbConnection = async () => {
+  if (!dbUrl) {
+    throw new Error("DBURL environment variable is required to run the seeder.");
+  }
   if (mongoose.connection.readyState !== 1) {
     await mongoose.connect(dbUrl, {
       useNewUrlParser: true,

@@ -13,31 +13,34 @@ const { runMonthlyReport } = require("./monthlyReport");
 const { runMonthlyBuildingReport } = require("./monthlyBuildingReport");
 require("./controllers/mailBuildingController");
 
-const defaultDbUrl = "mongodb+srv://myAtlasDBUser:Omnamahshivaya@myatlasclusteredu.ispuduj.mongodb.net/latecomers?retryWrites=true&w=majority";
-const dbUrl = process.env.DBURL || defaultDbUrl;
+const dbUrl = process.env.DBURL;
 
-mongoose.set('bufferCommands', false);
-mongoose.connect(dbUrl, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000,
-}).then(async () => {
-  console.log("DB connected successfully to MongoDB Atlas");
-  try {
-    const Login = require("./models/LoginSchema");
-    const count = await Login.countDocuments({});
-    if (count === 0) {
-      console.log("Database collections are empty, auto-seeding initial data...");
-      const { seed } = require("./seed");
-      await seed(false);
+if (dbUrl) {
+  mongoose.set('bufferCommands', false);
+  mongoose.connect(dbUrl, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 5000,
+  }).then(async () => {
+    console.log("DB connected successfully to MongoDB Atlas");
+    try {
+      const Login = require("./models/LoginSchema");
+      const count = await Login.countDocuments({});
+      if (count === 0) {
+        console.log("Database collections are empty, auto-seeding initial data...");
+        const { seed } = require("./seed");
+        await seed(false);
+      }
+    } catch (seedErr) {
+      console.error("Auto-seed error:", seedErr.message);
     }
-  } catch (seedErr) {
-    console.error("Auto-seed error:", seedErr.message);
-  }
-}).catch((err) => {
-  console.log("DB connection failed, falling back to resilient demo store");
-  console.log(err.message);
-});
+  }).catch((err) => {
+    console.log("DB connection failed, falling back to resilient demo store");
+    console.log(err.message);
+  });
+} else {
+  console.log("No DBURL provided, falling back to resilient demo store");
+}
 
 
 // const db = mongoose.connection;
