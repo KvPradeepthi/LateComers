@@ -13,7 +13,7 @@ const Visitor = require("./models/visitorSchema");
 const ExamSchedule = require("./models/examSchedule");
 const ErrorLog = require("./models/errorSchema");
 
-const dbUrl = process.env.DBURL || "mongodb://127.0.0.1:27017/latecomers_demo";
+const dbUrl = process.env.DBURL || "mongodb+srv://myAtlasDBUser:Omnamahshivaya@myatlasclusteredu.ispuduj.mongodb.net/latecomers?retryWrites=true&w=majority";
 
 const ensureDbConnection = async () => {
   if (mongoose.connection.readyState !== 1) {
