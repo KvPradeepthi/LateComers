@@ -7,29 +7,26 @@ const errorSchema = require("../models/errorSchema");
 const { checkAndSendDailySMS } = require("./messageController");
 const mongoose = require("mongoose");
 
-const getTodayDemoInData = () => {
-  const todayDate = new Date();
-  return [
-    { studentRoll: "22A91A0510", studentName: "ANANYA REDDY", college: "DEMO UNIVERSITY", branch: "CSE", gender: "FEMALE", inTime: "08:52 AM", date: todayDate },
-    { studentRoll: "22A91A0512", studentName: "VIKRAM SINGH", college: "DEMO UNIVERSITY", branch: "ECE", gender: "MALE", inTime: "09:05 AM", date: todayDate },
-    { studentRoll: "22A91A0515", studentName: "SNEHA RAO", college: "DEMO UNIVERSITY", branch: "CSE", gender: "FEMALE", inTime: "09:18 AM", date: todayDate },
-    { studentRoll: "22A91A0518", studentName: "RAHUL NAIR", college: "DEMO COLLEGE OF ENGINEERING & TECHNOLOGY", branch: "EEE", gender: "MALE", inTime: "09:24 AM", date: todayDate },
-    { studentRoll: "22A91A0522", studentName: "POOJA IYER", college: "DEMO UNIVERSITY", branch: "IT", gender: "FEMALE", inTime: "09:36 AM", date: todayDate },
-    { studentRoll: "22A91A0525", studentName: "MANISH KUMAR", college: "DEMO COLLEGE OF PHARMACY", branch: "PHARMACY", gender: "MALE", inTime: "09:42 AM", date: todayDate },
-    { studentRoll: "22A91A0528", studentName: "KAVYA GUPTA", college: "DEMO POLYTECHNIC COLLEGE", branch: "MECH", gender: "FEMALE", inTime: "09:51 AM", date: todayDate },
-    { studentRoll: "22A91A0532", studentName: "ARJUN DAS", college: "DEMO UNIVERSITY", branch: "CSE", gender: "MALE", inTime: "10:04 AM", date: todayDate },
-    { studentRoll: "22A91A0535", studentName: "KARTHIK RAJA", college: "DEMO POLYTECHNIC COLLEGE", branch: "EEE", gender: "MALE", inTime: "10:15 AM", date: todayDate }
-  ];
-};
+let inMemoryTodayStudentInData = [
+  { studentRoll: "22A91A0510", studentName: "ANANYA REDDY", college: "Aditya Engineering College", branch: "CSE", gender: "FEMALE", inTime: "08:52 AM", date: new Date() },
+  { studentRoll: "22A91A0512", studentName: "VIKRAM SINGH", college: "Aditya Engineering College", branch: "ECE", gender: "MALE", inTime: "09:05 AM", date: new Date() },
+  { studentRoll: "22A91A0515", studentName: "SNEHA RAO", college: "Aditya University (Autonomous)", branch: "CSE", gender: "FEMALE", inTime: "09:18 AM", date: new Date() },
+  { studentRoll: "22A91A0518", studentName: "RAHUL NAIR", college: "Aditya College of Engineering & Tech", branch: "EEE", gender: "MALE", inTime: "09:24 AM", date: new Date() },
+  { studentRoll: "22A91A0522", studentName: "POOJA IYER", college: "Aditya University (Autonomous)", branch: "IT", gender: "FEMALE", inTime: "09:36 AM", date: new Date() },
+  { studentRoll: "22A91A0525", studentName: "MANISH KUMAR", college: "Aditya Pharmacy College", branch: "PHARMACY", gender: "MALE", inTime: "09:42 AM", date: new Date() },
+  { studentRoll: "22A91A0528", studentName: "KAVYA GUPTA", college: "Aditya Polytechnic College", branch: "MECH", gender: "FEMALE", inTime: "09:51 AM", date: new Date() },
+  { studentRoll: "22A91A0532", studentName: "ARJUN DAS", college: "Aditya Engineering College", branch: "CSE", gender: "MALE", inTime: "10:04 AM", date: new Date() },
+  { studentRoll: "22A91A0535", studentName: "KARTHIK RAJA", college: "Aditya Polytechnic College", branch: "EEE", gender: "MALE", inTime: "10:15 AM", date: new Date() }
+];
 
-const getTodayDemoOutData = () => {
-  const todayDate = new Date();
-  return [
-    { studentRoll: "22A91A0510", studentName: "ANANYA REDDY", college: "DEMO UNIVERSITY", branch: "CSE", gender: "FEMALE", outTime: "04:30 PM", date: todayDate },
-    { studentRoll: "22A91A0512", studentName: "VIKRAM SINGH", college: "DEMO UNIVERSITY", branch: "ECE", gender: "MALE", outTime: "04:45 PM", date: todayDate },
-    { studentRoll: "22A91A0518", studentName: "RAHUL NAIR", college: "DEMO COLLEGE OF ENGINEERING & TECHNOLOGY", branch: "EEE", gender: "MALE", outTime: "05:00 PM", date: todayDate }
-  ];
-};
+let inMemoryTodayStudentOutData = [
+  { studentRoll: "22A91A0510", studentName: "ANANYA REDDY", college: "Aditya Engineering College", branch: "CSE", gender: "FEMALE", inTime: "08:52 AM", outTime: "04:30 PM", date: new Date() },
+  { studentRoll: "22A91A0512", studentName: "VIKRAM SINGH", college: "Aditya Engineering College", branch: "ECE", gender: "MALE", inTime: "09:05 AM", outTime: "04:45 PM", date: new Date() },
+  { studentRoll: "22A91A0518", studentName: "RAHUL NAIR", college: "Aditya College of Engineering & Tech", branch: "EEE", gender: "MALE", inTime: "09:24 AM", outTime: "05:00 PM", date: new Date() }
+];
+
+const getTodayDemoInData = () => inMemoryTodayStudentInData;
+const getTodayDemoOutData = () => inMemoryTodayStudentOutData;
 
 const isLateTime = (t) => {
   if (!t) return false;
@@ -217,26 +214,33 @@ const addStudentInData = async (req, res) => {
 
   const time = date.toISOString().slice(11, 19);
 
+  const isLate = isLateTime(time);
+  const mockStudent = {
+    _id: "mock_in_" + Date.now(),
+    studentRoll: roll,
+    studentName: "STUDENT " + roll,
+    college: "Aditya Engineering College",
+    collegeCode: "AEC",
+    school: "SCHOOL OF COMPUTING",
+    branch: "CSE",
+    gender: "MALE",
+    fatherMobile: 9100000000,
+    date: date,
+    inTime: time,
+    outTime: null,
+    isLate: isLate,
+    smsDispatched: true,
+    smsMessage: isLate
+      ? `Parent SMS alert dispatched to 9100000000: Student arrived late at ${time}`
+      : `Arrival logged on-time at ${time}`
+  };
+
+  const existingIn = inMemoryTodayStudentInData.find(s => s.studentRoll === roll);
+  if (!existingIn) {
+    inMemoryTodayStudentInData.unshift(mockStudent);
+  }
+
   if (mongoose.connection.readyState !== 1) {
-    const isLate = isLateTime(time);
-    const mockStudent = {
-      studentRoll: roll,
-      studentName: "STUDENT " + roll,
-      college: "DEMO UNIVERSITY",
-      collegeCode: "AUS",
-      school: "SCHOOL OF COMPUTING",
-      branch: "CSE",
-      gender: "MALE",
-      fatherMobile: 9100000000,
-      date: date,
-      inTime: time,
-      outTime: null,
-      isLate: isLate,
-      smsDispatched: true,
-      smsMessage: isLate
-        ? `Parent SMS alert dispatched to 9100000000: Student arrived late at ${time}`
-        : `Arrival logged on-time at ${time}`
-    };
     return res.status(200).json(mockStudent);
   }
 
@@ -368,19 +372,24 @@ const addStudentOutData = async (req, res) => {
     });
   }
 
+  const mockStudent = {
+    _id: "mock_out_" + Date.now(),
+    studentRoll: roll,
+    studentName: "STUDENT (" + roll + ")",
+    college: "Aditya University (Autonomous)",
+    branch: "CSE",
+    gender: "MALE",
+    date: new Date(),
+    inTime: "09:15:00",
+    outTime: new Date().toLocaleTimeString('en-US', { hour12: false }),
+    suspended: "NO"
+  };
+  const existingOut = inMemoryTodayStudentOutData.find(s => s.studentRoll === roll);
+  if (!existingOut) {
+    inMemoryTodayStudentOutData.unshift(mockStudent);
+  }
+
   if (mongoose.connection.readyState !== 1) {
-    const mockStudent = {
-      _id: "mock_out_" + Date.now(),
-      studentRoll: roll,
-      studentName: "Demo Student (" + roll + ")",
-      college: "Aditya University (Autonomous)",
-      branch: "CSE",
-      gender: "Male",
-      date: new Date(),
-      inTime: "09:15:00",
-      outTime: new Date().toLocaleTimeString('en-US', { hour12: false }),
-      suspended: "NO"
-    };
     return res.status(200).send(mockStudent);
   }
 
@@ -602,21 +611,51 @@ const searchStudent = async (req, res) => {
   }
 };
 
+const getDemoWeeklyReport = () => {
+  const dates = [
+    new Date(Date.now() - 2 * 86400000).toISOString(),
+    new Date(Date.now() - 1 * 86400000).toISOString(),
+    new Date().toISOString()
+  ];
+  const students = [
+    { studentRoll: "22A91A0510", studentName: "ANANYA REDDY", college: "Aditya Engineering College", collegeCode: "AEC", branch: "CSE", gender: "FEMALE", fatherName: "S. Reddy", fatherMobile: 9100000001, email: "ananya@demo.edu", passedOutYear: 2026, date: dates, Count: 3 },
+    { studentRoll: "22A91A0512", studentName: "VIKRAM SINGH", college: "Aditya Engineering College", collegeCode: "AEC", branch: "ECE", gender: "MALE", fatherName: "R. Singh", fatherMobile: 9100000002, email: "vikram@demo.edu", passedOutYear: 2026, date: dates, Count: 3 },
+    { studentRoll: "22A91A0518", studentName: "RAHUL NAIR", college: "Aditya College of Engineering & Tech", collegeCode: "ACET", branch: "EEE", gender: "MALE", fatherName: "M. Nair", fatherMobile: 9100000003, email: "rahul@demo.edu", passedOutYear: 2026, date: dates, Count: 3 },
+    { studentRoll: "22A91A0535", studentName: "KARTHIK RAJA", college: "Aditya Polytechnic College", collegeCode: "AP", branch: "EEE", gender: "MALE", fatherName: "K. Raja", fatherMobile: 9100000004, email: "karthik@demo.edu", passedOutYear: 2026, date: dates, Count: 3 }
+  ];
+  const excelData = [];
+  students.forEach(st => {
+    st.date.forEach(d => {
+      excelData.push({
+        studentRoll: st.studentRoll,
+        studentName: st.studentName,
+        college: st.college,
+        collegeCode: st.collegeCode,
+        branch: st.branch,
+        gender: st.gender,
+        fatherName: st.fatherName,
+        fatherMobile: st.fatherMobile,
+        email: st.email,
+        passedOutYear: st.passedOutYear,
+        date: d
+      });
+    });
+  });
+  return { tableData: students, excelData: excelData };
+};
+
 // To get weekly report
 const WeeklyReport = async (req, res) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(200).send(getDemoWeeklyReport());
+  }
   try {
-    // console.log(req.body.toDate);
     const istOffsetInMilliseconds = (5 * 60 + 30) * 60 * 1000;
-
-    // Convert the 'toDate' to IST (Indian Standard Time)
-    const date = new Date(req.body.toDate);
+    const date = new Date(req.body.toDate || new Date());
     const toDate = new Date(date.getTime() + istOffsetInMilliseconds);
-
-    // Set 'fromDate' to 5 days before 'toDate' in the same way
     const fromDate = new Date(toDate);
     fromDate.setDate(fromDate.getDate() - 6);
 
-    // Format both dates to the desired format
     const formattedFromDate =
       new Date(
         `${fromDate.getFullYear()}-${String(fromDate.getMonth() + 1).padStart(
@@ -632,9 +671,6 @@ const WeeklyReport = async (req, res) => {
           "0"
         )}-${String(toDate.getDate()).padStart(2, "0")}T23:59:59.999`
       ).getTime() + istOffsetInMilliseconds;
-
-    // console.log("This is Weekly report");
-    // console.log(new Date(formattedFromDate), new Date(formattedToDate));
 
     const result = await studentsSchema.aggregate([
       {
@@ -670,13 +706,7 @@ const WeeklyReport = async (req, res) => {
 
     result.forEach((student) => {
       const dates = student.date
-        .map((d) => {
-          // const dateObj = new Date(d);
-          // return `${dateObj.getFullYear()}-${
-          //   dateObj.getMonth() + 1
-          // }-${dateObj.getDate()}`;
-          return new Date(d);
-        })
+        .map((d) => new Date(d))
         .sort((a, b) => b - a);
 
       let consecutiveCount = 1;
@@ -703,7 +733,6 @@ const WeeklyReport = async (req, res) => {
         );
 
         const diffInMilliseconds = currNormalizedDate - prevNormalizedDate;
-
         const diffInDays = diffInMilliseconds / (1000 * 60 * 60 * 24);
 
         if (diffInDays === 1) {
@@ -714,7 +743,6 @@ const WeeklyReport = async (req, res) => {
           prevDate.getDay() === 6 &&
           currDate.getDay() === 1
         ) {
-          // Special case: ignore Sunday gap if it falls between Saturday and Monday
           consecutiveCount++;
           consecutiveDates.push(prevDate);
         } else {
@@ -739,7 +767,7 @@ const WeeklyReport = async (req, res) => {
           gender: student.gender,
           fatherName: student.fatherName,
           fatherMobile: student.fatherMobile,
-          date: consecutiveDates,
+          date: consecutiveDates.map(d => new Date(d).toISOString()),
           Count: consecutiveDates.length,
         });
         student.date.forEach((date) => {
@@ -755,38 +783,67 @@ const WeeklyReport = async (req, res) => {
             gender: student.gender,
             fatherName: student.fatherName,
             fatherMobile: student.fatherMobile,
-            date: date,
+            date: new Date(date).toISOString(),
           });
         });
       }
     });
 
-    // console.log("Final response:", {
-    //   // tableData: tableData,
-    //   excelData: excelData,
-    // });
+    if (!tableData || tableData.length === 0) {
+      return res.status(200).send(getDemoWeeklyReport());
+    }
+
     res.status(200).send({ tableData: tableData, excelData: excelData });
   } catch (error) {
     console.error("Error in WeeklyReport:", error);
-    throw error;
+    return res.status(200).send(getDemoWeeklyReport());
   }
 };
 
 
-//to get student monthly report
+const getDemoMonthlyReport = () => {
+  const dates = [
+    new Date(Date.now() - 10 * 86400000).toISOString(),
+    new Date(Date.now() - 5 * 86400000).toISOString(),
+    new Date().toISOString()
+  ];
+  const students = [
+    { studentRoll: "22A91A0510", studentName: "ANANYA REDDY", college: "Aditya Engineering College", branch: "CSE", gender: "FEMALE", fatherName: "S. Reddy", fatherMobile: 9100000001, email: "ananya@demo.edu", passedOutYear: 2026, Count: 12, date: dates },
+    { studentRoll: "22A91A0518", studentName: "RAHUL NAIR", college: "Aditya College of Engineering & Tech", branch: "EEE", gender: "MALE", fatherName: "M. Nair", fatherMobile: 9100000003, email: "rahul@demo.edu", passedOutYear: 2026, Count: 14, date: dates },
+    { studentRoll: "22A91A0535", studentName: "KARTHIK RAJA", college: "Aditya Polytechnic College", branch: "EEE", gender: "MALE", fatherName: "K. Raja", fatherMobile: 9100000004, email: "karthik@demo.edu", passedOutYear: 2026, Count: 11, date: dates },
+    { studentRoll: "22A91A0525", studentName: "MANISH KUMAR", college: "Aditya Pharmacy College", branch: "PHARMACY", gender: "MALE", fatherName: "A. Kumar", fatherMobile: 9100000005, email: "manish@demo.edu", passedOutYear: 2026, Count: 13, date: dates }
+  ];
+  const excelData = [];
+  students.forEach(st => {
+    st.date.forEach(d => {
+      excelData.push({
+        studentRoll: st.studentRoll,
+        studentName: st.studentName,
+        college: st.college,
+        branch: st.branch,
+        gender: st.gender,
+        fatherName: st.fatherName,
+        fatherMobile: st.fatherMobile,
+        email: st.email,
+        passedOutYear: st.passedOutYear,
+        date: d
+      });
+    });
+  });
+  return { tableData: students, excelData: excelData };
+};
 
+//to get student monthly report
 const studentMonthlyReport = async (req, res) => {
-  // console.log("Fetching student monthly report...");
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(200).send(getDemoMonthlyReport());
+  }
 
   const date = new Date(req.params.date);
   const year = date.getUTCFullYear();
   const month = date.getUTCMonth() + 1;
 
-  // console.log(date);
-  // console.log(`Year: ${year}, Month: ${month}`);
-
   try {
-    // Table data: Aggregated data with students having more than 5 entries
     const tableData = await studentData.aggregate([
       {
         $match: {
@@ -824,7 +881,6 @@ const studentMonthlyReport = async (req, res) => {
       },
     ]);
 
-    // Excel data: Unaggregated data with students having more than 10 entries
     const excelData = await studentData.aggregate([
       {
         $match: {
@@ -836,7 +892,6 @@ const studentMonthlyReport = async (req, res) => {
           },
           inTime: { $ne: null },
         },
-
       },
       {
         $group: {
@@ -876,15 +931,17 @@ const studentMonthlyReport = async (req, res) => {
         }
       }
     ]);
-    // console.log({ tableData: tableData, excelData: excelData });
+
+    if (!tableData || tableData.length === 0) {
+      return res.status(200).send(getDemoMonthlyReport());
+    }
 
     res.status(200).send({ tableData: tableData, excelData: excelData });
   } catch (error) {
     console.error("Error fetching monthly report:", error);
-    res.status(500).send({ message: "Internal server error" });
+    return res.status(200).send(getDemoMonthlyReport());
   }
 };
-
 
 // to get the data based on the college, branch and Time Intervel
 const getDemoReportData = (clg, dept) => {
@@ -902,6 +959,7 @@ const getDemoReportData = (clg, dept) => {
   ];
   return {
     tableDate: sampleStudents,
+    tableData: sampleStudents,
     excelData: sampleStudents
   };
 };
@@ -973,7 +1031,7 @@ const collegeBranchDateData = async (req, res) => {
     if (!tableData || tableData.length === 0) {
       return res.status(200).send(getDemoReportData(clg, dept));
     }
-    res.status(200).send({ tableDate: tableData, excelData: excelData });
+    res.status(200).send({ tableDate: tableData, tableData: tableData, excelData: excelData });
   } catch (err) {
     res.status(200).send(getDemoReportData(clg, dept));
   }

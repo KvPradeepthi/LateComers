@@ -270,9 +270,9 @@ const StudentDataTable = () => {
         },
       ],
       rows:
-        finalData.tableDate &&
-        finalData.tableDate
-          .sort((a, b) => b.Count - a.Count)
+        ((finalData && (finalData.tableDate || finalData.tableData)) || [])
+          .slice()
+          .sort((a, b) => (b.Count || 0) - (a.Count || 0))
           .map(student => ({
             ...student,
             buttons: (
