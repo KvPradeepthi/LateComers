@@ -199,17 +199,19 @@ function NewVisitors(props) {
       minute: "2-digit",
       second: "2-digit",
     });
-    const selectedPlace = (isOtherSelected ? FormData.otherPlace : FormData.placeToGo) || "Aditya Engineering College";
+    const selectedPlace = (isOtherSelected ? FormData.otherPlace : FormData.placeToGo) || "DEMO UNIVERSITY";
     const Data = {
       ...FormData,
-      visitorName: FormData.visitorName.trim(),
-      visitorPlace: FormData.visitorPlace || "Local",
-      visitorPhone: FormData.visitorPhone || "9848022338",
-      personToMeet: FormData.personToMeet || "HOD / Administrative Office",
-      visitorPurpose: FormData.visitorPurpose || "Official Campus Visit",
+      visitorName: (FormData.visitorName || "").trim(),
+      visitorPlace: (FormData.visitorPlace || "").trim() || "Local",
+      visitorPhone: Number(FormData.visitorPhone) || 9848022338,
+      visitorEmail: FormData.visitorEmail || "",
+      personToMeet: (FormData.personToMeet || "").trim() || "Department Office",
+      visitorPurpose: (FormData.visitorPurpose || "").trim() || "Official Campus Visit",
       placeToGo: selectedPlace,
-      visitorCount: FormData.visitorCount || 1,
+      visitorCount: Number(FormData.visitorCount) || 1,
       inTime: currentTime,
+      inDate: FormData.inDate || moment().format("YYYY-MM-DD"),
       passNumber: "V-" + (1000 + (parseInt(GetPass) || Date.now() % 1000)),
     };
     axios
@@ -778,6 +780,7 @@ function NewVisitors(props) {
                       width: "40%",
                       minWidth: "250px",
                     }}
+                    >
                     <Button
                       color="primary"
                       className="ms-1"

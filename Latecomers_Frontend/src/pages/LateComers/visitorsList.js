@@ -56,13 +56,9 @@ function VisitorsList(props) {
 
   useEffect(() => {
     setloader(true);
-    axios
-      .get(
-        baseUrl +
-          `/get-Visitors-Bt-Dates/${new Date(obj.fromDate)}/${new Date(
-            obj.toDate
-          )}/${obj.place}`
-      )
+    const fromStr = moment(obj.fromDate).format("YYYY-MM-DD");
+    const toStr = moment(obj.toDate).format("YYYY-MM-DD");
+    axios.get(baseUrl + `/get-Visitors-Bt-Dates/${fromStr}/${toStr}/${encodeURIComponent(obj.place)}`)
       .then((result) => {
         // console.log(result.data)
         setFinalData(result.data);
@@ -370,13 +366,9 @@ function VisitorsList(props) {
 
     // console.log(resObject)
     setHead(resObject.place);
-    axios
-      .get(
-        baseUrl +
-          `/get-Visitors-Bt-Dates/${new Date(fromDate)}/${new Date(toDate)}/${
-            resObject.place
-          }`
-      )
+    const fromStr = moment(fromDate).format("YYYY-MM-DD");
+    const toStr = moment(toDate).format("YYYY-MM-DD");
+    axios.get(baseUrl + `/get-Visitors-Bt-Dates/${fromStr}/${toStr}/${encodeURIComponent(resObject.place)}`)
       .then((result) => {
         // console.log(result.data)
         setFinalData(result.data);
@@ -538,34 +530,47 @@ function VisitorsList(props) {
       { label: "Actions", field: "buttons" },
     ],
     rows:
-      finalData &&
-      finalData
-        .sort((a, b) => {
-          const dateComparison = b.inDate.localeCompare(a.inDate);
-          if (dateComparison !== 0) {
-            return dateComparison;
-          }
-          return b.inTime.localeCompare(a.inTime);
-        })
-        .map((visitor, index) => ({
-          ...visitor,
-          inDate:
-            visitor.inDate &&
-            visitor.inDate.split("T")[0].split("-").reverse().join("-"),
-          outDate:
-            visitor.outDate &&
-            visitor.outDate.split("T")[0].split("-").reverse().join("-"),
-          SNO: index + 1,
-          buttons: (
-            <Button
-              onClick={() => handleButtonClick(visitor)}
-              className="btn waves-effect waves-light"
-              style={{ letterSpacing: 0.5, backgroundColor: "#5CB85C" }}
-            >
-              PRINT
-            </Button>
-          ),
-        })),
+      Array.isArray(finalData)
+        ? [...finalData]
+            .sort((a, b) => {
+              const dateA = a && a.inDate ? (typeof a.inDate === "string" ? a.inDate : new Date(a.inDate).toISOString()) : "";
+              const dateB = b && b.inDate ? (typeof b.inDate === "string" ? b.inDate : new Date(b.inDate).toISOString()) : "";
+              const dateComparison = dateB.localeCompare(dateA);
+              if (dateComparison !== 0) {
+                return dateComparison;
+              }
+              const timeA = String(a?.inTime || "");
+              const timeB = String(b?.inTime || "");
+              return timeB.localeCompare(timeA);
+            })
+            .map((visitor, index) => {
+              const formattedInDate = visitor.inDate
+                ? (typeof visitor.inDate === "string" && visitor.inDate.includes("T")
+                    ? visitor.inDate.split("T")[0].split("-").reverse().join("-")
+                    : (moment(visitor.inDate).isValid() ? moment(visitor.inDate).format("DD-MM-YYYY") : String(visitor.inDate)))
+                : "";
+              const formattedOutDate = visitor.outDate
+                ? (typeof visitor.outDate === "string" && visitor.outDate.includes("T")
+                    ? visitor.outDate.split("T")[0].split("-").reverse().join("-")
+                    : (moment(visitor.outDate).isValid() ? moment(visitor.outDate).format("DD-MM-YYYY") : String(visitor.outDate)))
+                : "";
+              return {
+                ...visitor,
+                inDate: formattedInDate,
+                outDate: formattedOutDate,
+                SNO: index + 1,
+                buttons: (
+                  <Button
+                    onClick={() => handleButtonClick(visitor)}
+                    className="btn waves-effect waves-light"
+                    style={{ letterSpacing: 0.5, backgroundColor: "#5CB85C" }}
+                  >
+                    PRINT
+                  </Button>
+                ),
+              };
+            }))
+        : [],
       }),
       [finalData],
     )
