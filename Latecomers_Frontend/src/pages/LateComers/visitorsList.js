@@ -588,7 +588,7 @@ function VisitorsList(props) {
                   </Button>
                 ),
               };
-            }))
+            })
         : [],
       }),
       [finalData],
