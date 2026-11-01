@@ -207,10 +207,7 @@ const getVisitorsBtDates = async (req, res) => {
     const combined = [...(data || [])];
     for (const mem of inMemoryVisitors) {
       if (!combined.some(v => String(v.passNumber) === String(mem.passNumber))) {
-        const memDate = new Date(mem.inDate);
-        if (memDate >= fromDate && memDate <= toDate) {
-          combined.unshift(mem);
-        }
+        combined.unshift(mem);
       }
     }
 

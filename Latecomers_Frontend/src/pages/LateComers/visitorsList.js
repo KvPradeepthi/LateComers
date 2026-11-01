@@ -47,6 +47,25 @@ function VisitorsList(props) {
     moment(new Date()).format("YYYY-MM-DD")
   ); // Initial maximum "From Date"
 
+  
+  const mergeWithLocalVisitors = (serverVisitors, selectedPlace) => {
+    try {
+      const localVisitors = JSON.parse(localStorage.getItem("latecomers_local_visitors") || "[]");
+      if (!Array.isArray(localVisitors) || localVisitors.length === 0) return serverVisitors || [];
+      const combined = [...(serverVisitors || [])];
+      for (const lv of localVisitors) {
+        if (!combined.some(sv => String(sv.passNumber) === String(lv.passNumber))) {
+          if (!selectedPlace || selectedPlace === "ALL COLLEGES" || (lv.placeToGo || "").toLowerCase() === selectedPlace.toLowerCase()) {
+            combined.unshift(lv);
+          }
+        }
+      }
+      return combined;
+    } catch (e) {
+      return serverVisitors || [];
+    }
+  };
+
   const obj = {
     fromDate: moment(new Date()).format("YYYY-MM-DD"),
     toDate: moment(new Date()).format("YYYY-MM-DD"),
@@ -61,7 +80,7 @@ function VisitorsList(props) {
     axios.get(baseUrl + `/get-Visitors-Bt-Dates/${fromStr}/${toStr}/${encodeURIComponent(obj.place)}`)
       .then((result) => {
         // console.log(result.data)
-        setFinalData(result.data);
+        setFinalData(mergeWithLocalVisitors(result.data, obj.place));
       })
       .catch((err) => {
         console.log(err);
@@ -371,7 +390,7 @@ function VisitorsList(props) {
     axios.get(baseUrl + `/get-Visitors-Bt-Dates/${fromStr}/${toStr}/${encodeURIComponent(resObject.place)}`)
       .then((result) => {
         // console.log(result.data)
-        setFinalData(result.data);
+        setFinalData(mergeWithLocalVisitors(result.data, resObject.place));
       })
       .catch((err) => {
         console.log(err);

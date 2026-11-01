@@ -214,8 +214,13 @@ function NewVisitors(props) {
       inDate: FormData.inDate || moment().format("YYYY-MM-DD"),
       passNumber: "V-" + (1000 + (parseInt(GetPass) || Date.now() % 1000)),
     };
-    axios
-      .post(baseUrl + "/add-Visitor", Data)
+        try {
+      const recent = JSON.parse(localStorage.getItem("latecomers_local_visitors") || "[]");
+      const cleaned = recent.filter(v => String(v.passNumber) !== String(Data.passNumber));
+      cleaned.unshift(Data);
+      localStorage.setItem("latecomers_local_visitors", JSON.stringify(cleaned.slice(0, 100)));
+    } catch (e) {}
+    axios.post(baseUrl + "/add-Visitor", Data)
       .then((result) => {
         toast.success(`Visitor ${Data.visitorName} Added Successfully! Check Visitors List to view pass.`, {
           position: "top-right",
@@ -437,8 +442,13 @@ function NewVisitors(props) {
     iframe.contentWindow.onafterprint = () => {
       console.log("Print dialog closed");
 
-      axios
-        .post(baseUrl + "/add-Visitor", Data)
+            try {
+        const recent = JSON.parse(localStorage.getItem("latecomers_local_visitors") || "[]");
+        const cleaned = recent.filter(v => String(v.passNumber) !== String(Data.passNumber));
+        cleaned.unshift(Data);
+        localStorage.setItem("latecomers_local_visitors", JSON.stringify(cleaned.slice(0, 100)));
+      } catch (e) {}
+      axios.post(baseUrl + "/add-Visitor", Data)
         .then((result) => {
           console.log("Added successfully ");
           setIsUpdated(!isUpdated);
